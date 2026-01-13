@@ -1,4 +1,3 @@
-//Ship.cs
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,100 +6,93 @@ using System.Collections;
 [System.Serializable]
 public class Ship : MonoBehaviour
 {
-    [Header("Настройки корабля")]
-    public int length = 1; // 2, 3, 4, 5
+    [Header("ГЌГ Г±ГІГ°Г®Г©ГЄГЁ ГЄГ®Г°Г ГЎГ«Гї")]
+    public int length = 1;
     public string shipName;
 
-    [Header("Текущее состояние")]
-    public Vector2Int gridPosition; // Позиция носа корабля
-    public int direction = 0; // 0 влево, 1 вниз, 2 вправо, 3 вверх
+    [Header("Г’ГҐГЄГіГ№ГҐГҐ Г±Г®Г±ГІГ®ГїГ­ГЁГҐ")]
+    public Vector2Int gridPosition;
+    public int direction = 0;
     public bool isPlaced = false;
     public bool isSelected = false;
-    public bool hasMoved = false; // Новое: двигался ли корабль хотя бы раз
+    public bool hasMoved = false;
 
-    [Header("Боевая система")]
-    public int health = 1; // Здоровье корабля
-    public int maxHealth = 1; // Максимальное здоровье
-    public bool isSunk = false; // Потоплен ли корабль
-    public bool isVisible = true; // Видим ли корабль (для противника)
+    [Header("ГЃГ®ГҐГўГ Гї Г±ГЁГ±ГІГҐГ¬Г ")]
+    public int health = 1;
+    public int maxHealth = 1;
+    public bool isSunk = false;
+    public bool isVisible = true;
 
-    [Header("Визуал")]
-    public GameObject shipModel; // Ссылка на 3D модель
+    [Header("Г‚ГЁГ§ГіГ Г«")]
+    public GameObject shipModel;
     public Material defaultMaterial;
     public Material placementValidMaterial;
     public Material placementInvalidMaterial;
     public Material selectedMaterial;
-    public Material damagedMaterial; // Материал для поврежденного корабля
-    public Material sunkMaterial; // Материал для потопленного корабля
+    public Material damagedMaterial;
+    public Material sunkMaterial;
 
-    [Header("Эффекты")]
-    public GameObject sinkingEffect; // Эффект потопления
+    [Header("ГќГґГґГҐГЄГІГ»")]
+    public GameObject sinkingEffect;
 
-    [Header("Владелец")]
+    [Header("Г‚Г«Г Г¤ГҐГ«ГҐГ¶")]
     public Player owner;
 
-    [Header("Действия за ход")]
-    public bool hasActedThisTurn = false; // Совершил ли действие в этом ходу
+    [Header("Г„ГҐГ©Г±ГІГўГЁГї Г§Г  ГµГ®Г¤")]
+    public bool hasActedThisTurn = false;
 
-    [Header("Визуализация потопления")]
-    public bool isRevealedToOpponent = false; // Показан ли противнику
+    [Header("Г‚ГЁГ§ГіГ Г«ГЁГ§Г Г¶ГЁГї ГЇГ®ГІГ®ГЇГ«ГҐГ­ГЁГї")]
+    public bool isRevealedToOpponent = false;
 
-    [Header("Анимация потопления")]
-    public float sinkAnimationSpeed = 180f; // градусов в секунду
-    public float sinkAnimationDelay = 0.2f; // задержка перед анимацией
+    [Header("ГЂГ­ГЁГ¬Г Г¶ГЁГї ГЇГ®ГІГ®ГЇГ«ГҐГ­ГЁГї")]
+    public float sinkAnimationSpeed = 180f;
+    public float sinkAnimationDelay = 0.2f;
     private bool isSinking = false;
     private Coroutine sinkCoroutine;
 
 
-    // Клетки, которые занимает корабль
     private List<Vector2Int> occupiedCells = new List<Vector2Int>();
 
-    // Список клеток, по которым уже стреляли
     private List<Vector2Int> hitCells = new List<Vector2Int>();
 
-    // Инициализация
     public void Init(int shipLength, string name)
     {
         length = shipLength;
         shipName = name;
-        maxHealth = shipLength; // Здоровье = длине корабля
+        maxHealth = shipLength;
         health = maxHealth;
 
-        // Получаем модель если она есть
         if (shipModel == null && transform.childCount > 0)
         {
             shipModel = transform.GetChild(0).gameObject;
         }
     }
 
-    // Установить владельца корабля
     public void SetOwner(Player playerOwner)
     {
         owner = playerOwner;
     }
 
-    // Проверить, попадает ли выстрел в корабль
     public bool IsHit(Vector2Int targetCell)
     {
         List<Vector2Int> cells = GetOccupiedCells();
         return cells.Contains(targetCell);
     }
 
-    // Получить урон
     public bool TakeDamage(Vector2Int hitCell)
     {
         if (isSunk) return false;
 
         if (hitCells.Contains(hitCell))
         {
-            Debug.Log($"Повторное попадание в клетку [{hitCell.x}, {hitCell.y}] корабля {shipName}");
+            Debug.Log($"ГЏГ®ГўГІГ®Г°Г­Г®ГҐ ГЇГ®ГЇГ Г¤Г Г­ГЁГҐ Гў ГЄГ«ГҐГІГЄГі [{hitCell.x}, {hitCell.y}] ГЄГ®Г°Г ГЎГ«Гї {shipName}");
             health--;
         }
         else
         {
             hitCells.Add(hitCell);
             health--;
-            Debug.Log($"Попадание в {shipName}! Здоровье: {health}/{maxHealth}");
+            Debug.Log($"ГЏГ®ГЇГ Г¤Г Г­ГЁГҐ Гў {shipName}! Г‡Г¤Г®Г°Г®ГўГјГҐ: {health}/{maxHealth}");
         }
 
         if (health <= 0)
@@ -134,38 +126,31 @@ public class Ship : MonoBehaviour
             }
         }
 
-        //transform.rotation *= Quaternion.Euler(0, 0, 180);
         transform.position = new Vector3(transform.position.x, 0.3f, transform.position.z);
 
-        Debug.Log($"Корабль {shipName} потоплен!");
+        Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {shipName} ГЇГ®ГІГ®ГЇГ«ГҐГ­!");
     }
 
-    // Показать корабль противнику (просто показывает модель)
     public void RevealToOpponent()
     {
         if (isSunk)
         {
-            // ВСЕГДА показываем корабль
             SetVisible(true);
 
-            // Анимацию запускаем ТОЛЬКО при первом показе
             if (!isRevealedToOpponent)
             {
                 isRevealedToOpponent = true;
-                Debug.Log($"Корабль {shipName} показан противнику ВПЕРВЫЕ");
+                Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {shipName} ГЇГ®ГЄГ Г§Г Г­ ГЇГ°Г®ГІГЁГўГ­ГЁГЄГі Г‚ГЏГ…ГђГ‚Г›Г…");
 
-                // ЗАПУСКАЕМ АНИМАЦИЮ ТОЛЬКО ЗДЕСЬ
                 PlaySinkAnimation();
             }
             else
             {
-                // Уже был показан - просто показываем
-                Debug.Log($"Корабль {shipName} уже был показан противнику (просто показываем)");
+                Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {shipName} ГіГ¦ГҐ ГЎГ»Г« ГЇГ®ГЄГ Г§Г Г­ ГЇГ°Г®ГІГЁГўГ­ГЁГЄГі (ГЇГ°Г®Г±ГІГ® ГЇГ®ГЄГ Г§Г»ГўГ ГҐГ¬)");
             }
         }
     }
 
-    // Применить визуальный эффект повреждения
     private void ApplyDamagedVisual()
     {
         if (shipModel != null && damagedMaterial != null)
@@ -178,7 +163,6 @@ public class Ship : MonoBehaviour
         }
     }
 
-    // Показать/скрыть корабль
     public void SetVisible(bool visible)
     {
         isVisible = visible;
@@ -187,7 +171,6 @@ public class Ship : MonoBehaviour
             shipModel.SetActive(visible);
         }
 
-        // Если корабль потоплен и его показывают
         if (visible && isSunk && sunkMaterial != null && shipModel != null)
         {
             Renderer renderer = shipModel.GetComponent<Renderer>();
@@ -198,7 +181,6 @@ public class Ship : MonoBehaviour
         }
     }
 
-    // Сбросить состояние для новой игры
     public void ResetBattleState()
     {
         health = maxHealth;
@@ -217,32 +199,27 @@ public class Ship : MonoBehaviour
         transform.rotation = Quaternion.identity;
     }
 
-    // Повернуть корабль на 90 градусов
     public void Rotate90()
     {
         direction = (direction + 1) % 4;
-        Debug.Log($"Корабль '{shipName}' повернут. Направление: {GetDirectionName()}");
+        Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј '{shipName}' ГЇГ®ГўГҐГ°Г­ГіГІ. ГЌГ ГЇГ°Г ГўГ«ГҐГ­ГЁГҐ: {GetDirectionName()}");
     }
 
-    // Повернуть корабль налево (A)
     public bool RotateLeft(GridManager grid, List<Ship> playerShips)
     {
         return Rotate(grid, playerShips, true);
     }
 
-    // Повернуть корабль направо (D)
     public bool RotateRight(GridManager grid, List<Ship> playerShips)
     {
         return Rotate(grid, playerShips, false);
     }
 
-    // Общий метод поворота
     private bool Rotate(GridManager grid, List<Ship> playerShips, bool isLeftTurn)
     {
-        // ДОБАВЬ ЭТУ ПРОВЕРКУ в начало метода
         if (isSunk || health <= 0)
         {
-            Debug.Log($"{shipName} потоплен, движение невозможно");
+            Debug.Log($"{shipName} ГЇГ®ГІГ®ГЇГ«ГҐГ­, Г¤ГўГЁГ¦ГҐГ­ГЁГҐ Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®");
             return false;
         }
 
@@ -303,11 +280,11 @@ public class Ship : MonoBehaviour
     {
         switch (direction)
         {
-            case 0: return "влево";
-            case 1: return "вниз";
-            case 2: return "вправо";
-            case 3: return "вверх";
-            default: return "неизвестно";
+            case 0: return "ГўГ«ГҐГўГ®";
+            case 1: return "ГўГ­ГЁГ§";
+            case 2: return "ГўГЇГ°Г ГўГ®";
+            case 3: return "ГўГўГҐГ°Гµ";
+            default: return "Г­ГҐГЁГ§ГўГҐГ±ГІГ­Г®";
         }
     }
 
@@ -337,7 +314,6 @@ public class Ship : MonoBehaviour
         return occupiedCells;
     }
 
-    // Проверить, можно ли разместить корабль на позиции
     public bool CanPlaceAt(Vector2Int position, int dir, GridManager grid, List<Ship> otherShips)
     {
         Vector2Int oldPos = gridPosition;
@@ -354,7 +330,6 @@ public class Ship : MonoBehaviour
         return canPlace;
     }
 
-    // Проверка валидности размещения
     private bool IsPlacementValid(GridManager grid, List<Ship> otherShips)
     {
         List<Vector2Int> cells = GetOccupiedCells();
@@ -396,7 +371,6 @@ public class Ship : MonoBehaviour
         return true;
     }
 
-    // Разместить корабль
     public void PlaceShip(GridManager grid, List<Ship> otherShips)
     {
         if (CanPlaceAt(gridPosition, direction, grid, otherShips))
@@ -470,7 +444,6 @@ public class Ship : MonoBehaviour
         transform.rotation = grid.transform.rotation * Quaternion.Euler(0, rotationY, 0);
     }
 
-    // Подсветка для режима размещения
     public void SetPlacementVisual(bool isValid)
     {
         if (shipModel == null) return;
@@ -489,7 +462,6 @@ public class Ship : MonoBehaviour
         }
     }
 
-    // Проверить валидность каждой клетки отдельно
     public List<bool> GetCellValidStatus(GridManager grid, List<Ship> otherShips)
     {
         List<bool> validStatus = new List<bool>();
@@ -539,7 +511,6 @@ public class Ship : MonoBehaviour
         return validStatus;
     }
 
-    // Получить список проблемных клеток
     public List<Vector2Int> GetInvalidCells(GridManager grid, List<Ship> otherShips)
     {
         List<Vector2Int> invalidCells = new List<Vector2Int>();
@@ -557,7 +528,6 @@ public class Ship : MonoBehaviour
         return invalidCells;
     }
 
-    // Выделить корабль
     public void SetSelected(bool selected)
     {
         isSelected = selected;
@@ -579,19 +549,16 @@ public class Ship : MonoBehaviour
         }
     }
 
-    // Получить все клетки корабля
     public List<Vector2Int> GetAllCells()
     {
         return GetOccupiedCells();
     }
 
-    // Движение вперед (по направлению носа)
     public bool MoveForward(GridManager grid, List<Ship> playerShips)
     {
-        // ДОБАВЬ ЭТУ ПРОВЕРКУ в начало метода
         if (isSunk || health <= 0)
         {
-            Debug.Log($"{shipName} потоплен, движение невозможно");
+            Debug.Log($"{shipName} ГЇГ®ГІГ®ГЇГ«ГҐГ­, Г¤ГўГЁГ¦ГҐГ­ГЁГҐ Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®");
             return false;
         }
 
@@ -624,13 +591,11 @@ public class Ship : MonoBehaviour
         }
     }
 
-    // Движение назад (против направления носа)
     public bool MoveBackward(GridManager grid, List<Ship> playerShips)
     {
-        // ДОБАВЬ ЭТУ ПРОВЕРКУ в начало метода
         if (isSunk || health <= 0)
         {
-            Debug.Log($"{shipName} потоплен, движение невозможно");
+            Debug.Log($"{shipName} ГЇГ®ГІГ®ГЇГ«ГҐГ­, Г¤ГўГЁГ¦ГҐГ­ГЁГҐ Г­ГҐГўГ®Г§Г¬Г®Г¦Г­Г®");
             return false;
         }
 
@@ -664,10 +629,8 @@ public class Ship : MonoBehaviour
     }
 
 
-    // Метод для анимации потопления
     public void PlaySinkAnimation()
     {
-        // Проверяем не запущена ли уже анимация
         if (sinkCoroutine != null || isSinking) return;
 
         sinkCoroutine = StartCoroutine(SinkAnimation());
@@ -675,15 +638,13 @@ public class Ship : MonoBehaviour
 
     IEnumerator SinkAnimation()
     {
-        isSinking = true; // Устанавливаем флаг
+        isSinking = true;
 
-        // Ждем перед началом анимации
         yield return new WaitForSeconds(sinkAnimationDelay);
 
         Quaternion startRotation = transform.rotation;
         float currentRotation = 0f;
 
-        // Поворачиваем на 180 градусов
         while (currentRotation < 180f)
         {
             float rotationStep = sinkAnimationSpeed * Time.deltaTime;
@@ -692,13 +653,13 @@ public class Ship : MonoBehaviour
             if (currentRotation > 180f)
                 currentRotation = 180f;
 
-            // Поворачиваем вокруг оси Z
             transform.rotation = startRotation * Quaternion.Euler(0, 0, currentRotation);
 
             yield return null;
         }
 
         sinkCoroutine = null;
-        isSinking = false; // Сбрасываем флаг
+        isSinking = false;
     }
+
 }

@@ -1,4 +1,3 @@
-//Cell.cs
 using UnityEngine;
 
 public class Cell : MonoBehaviour
@@ -8,7 +7,6 @@ public class Cell : MonoBehaviour
 
     void Start()
     {
-        // Гарантируем наличие коллайдера
         if (GetComponent<Collider>() == null)
         {
             gameObject.AddComponent<BoxCollider>();
@@ -29,6 +27,7 @@ public class Cell : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log($"Клик по клетке: ({x}, {y})");
+        Debug.Log($"ГЉГ«ГЁГЄ ГЇГ® ГЄГ«ГҐГІГЄГҐ: ({x}, {y})");
     }
+
 }

@@ -1,25 +1,24 @@
-//Player.cs
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
 public class Player : MonoBehaviour
 {
-    [Header("Настройки игрока")]
+    [Header("ГЌГ Г±ГІГ°Г®Г©ГЄГЁ ГЁГЈГ°Г®ГЄГ ")]
     public string playerName;
     [SerializeField] public List<Ship> ships = new List<Ship>();
 
-    [Header("Компоненты")]
+    [Header("ГЉГ®Г¬ГЇГ®Г­ГҐГ­ГІГ»")]
     [SerializeField] private ShipPlacer shipPlacer;
     [SerializeField] private ShipMovementController movementController;
 
-    [Header("Поле стрельбы")]
-    [SerializeField] private GridManager battleGrid; // Сетка для отображения выстрелов
+    [Header("ГЏГ®Г«ГҐ Г±ГІГ°ГҐГ«ГјГЎГ»")]
+    [SerializeField] private GridManager battleGrid;
 
     private GridManager playerGrid;
     private Vector2Int selectedTarget = new Vector2Int(-1, -1);
     private bool hasTakenActionThisTurn = false;
-    private List<Vector2Int> incomingShots = new List<Vector2Int>(); // Выстрелы по этому игроку
+    private List<Vector2Int> incomingShots = new List<Vector2Int>();
 
     public void Initialize(string name, GridManager grid)
     {
@@ -48,7 +47,7 @@ public class Player : MonoBehaviour
 
             if (ship.owner != null && ship.owner != this)
             {
-                Debug.LogWarning($"Удаляем корабль {ship.shipName} из списка {playerName} - он принадлежит {ship.owner.playerName}");
+                Debug.LogWarning($"Г“Г¤Г Г«ГїГҐГ¬ ГЄГ®Г°Г ГЎГ«Гј {ship.shipName} ГЁГ§ Г±ГЇГЁГ±ГЄГ  {playerName} - Г®Г­ ГЇГ°ГЁГ­Г Г¤Г«ГҐГ¦ГЁГІ {ship.owner.playerName}");
                 shipsToRemove.Add(ship);
             }
         }
@@ -67,7 +66,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"ShipPlacer не найден для игрока {playerName}");
+            Debug.LogError($"ShipPlacer Г­ГҐ Г­Г Г©Г¤ГҐГ­ Г¤Г«Гї ГЁГЈГ°Г®ГЄГ  {playerName}");
         }
     }
 
@@ -99,39 +98,34 @@ public class Player : MonoBehaviour
     public bool TakeHit(Vector2Int target)
     {
         bool hit = false;
-        Ship sunkShip = null; // Запоминаем, какой корабль потопили
+        Ship sunkShip = null;
 
         foreach (Ship ship in ships)
         {
             if (ship.IsHit(target))
             {
-                // Запоминаем состояние до выстрела
                 bool wasSunkBefore = ship.isSunk;
 
-                // Наносим урон
                 ship.TakeDamage(target);
                 hit = true;
 
-                // Если корабль только что потопили (был не потоплен, стал потоплен)
                 if (!wasSunkBefore && ship.isSunk)
                 {
-                    sunkShip = ship; // Запоминаем потопленный корабль
-                    Debug.Log($"Корабль {ship.shipName} потоплен при выстреле в [{target.x},{target.y}]!");
+                    sunkShip = ship;
+                    Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {ship.shipName} ГЇГ®ГІГ®ГЇГ«ГҐГ­ ГЇГ°ГЁ ГўГ»Г±ГІГ°ГҐГ«ГҐ Гў [{target.x},{target.y}]!");
                 }
             }
         }
 
-        // Сохраняем информацию о выстреле
         incomingShots.Add(target);
 
-        // Если потопили корабль - НЕМЕДЛЕННО показываем его противнику
         if (sunkShip != null)
         {
             sunkShip.RevealToOpponent();
-            Debug.Log($"Корабль {sunkShip.shipName} показан противнику немедленно!");
+            Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {sunkShip.shipName} ГЇГ®ГЄГ Г§Г Г­ ГЇГ°Г®ГІГЁГўГ­ГЁГЄГі Г­ГҐГ¬ГҐГ¤Г«ГҐГ­Г­Г®!");
         }
 
-        Debug.Log($"{playerName}: выстрел по [{target.x},{target.y}] - {(hit ? "ПОПАДАНИЕ" : "ПРОМАХ")} {(sunkShip != null ? " и КОРАБЛЬ ПОТОПЛЕН" : "")}");
+        Debug.Log($"{playerName}: ГўГ»Г±ГІГ°ГҐГ« ГЇГ® [{target.x},{target.y}] - {(hit ? "ГЏГЋГЏГЂГ„ГЂГЌГ€Г…" : "ГЏГђГЋГЊГЂГ•")} {(sunkShip != null ? " ГЁ ГЉГЋГђГЂГЃГ‹Гњ ГЏГЋГ’ГЋГЏГ‹Г…ГЌ" : "")}");
         return hit;
     }
 
@@ -152,7 +146,6 @@ public class Player : MonoBehaviour
         foreach (Ship ship in ships)
         {
             ship.gameObject.SetActive(true);
-            // Или ship.SetVisible(true); в зависимости от логики
         }
     }
 
@@ -209,17 +202,15 @@ public class Player : MonoBehaviour
         {
             ship.hasActedThisTurn = false;
         }
-        Debug.Log($"{playerName} сбросил действия кораблей");
+        Debug.Log($"{playerName} Г±ГЎГ°Г®Г±ГЁГ« Г¤ГҐГ©Г±ГІГўГЁГї ГЄГ®Г°Г ГЎГ«ГҐГ©");
     }
 
-    // Получить сетку игрока (для отображения выстрелов)
     public GridManager GetPlayerGrid()
     {
         return playerGrid;
     }
 
 
-    // Показать ВСЕ потопленные корабли этого игрока
     public void RevealAllSunkShips()
     {
         int sunkCount = 0;
@@ -234,7 +225,7 @@ public class Player : MonoBehaviour
 
         if (sunkCount > 0)
         {
-            Debug.Log($"Показано {sunkCount} потопленных кораблей игрока {playerName}");
+            Debug.Log($"ГЏГ®ГЄГ Г§Г Г­Г® {sunkCount} ГЇГ®ГІГ®ГЇГ«ГҐГ­Г­Г»Гµ ГЄГ®Г°Г ГЎГ«ГҐГ© ГЁГЈГ°Г®ГЄГ  {playerName}");
         }
     }
 
@@ -245,10 +236,11 @@ public class Player : MonoBehaviour
             if (ship == null) continue;
             if (!ship.isPlaced)
             {
-                Debug.Log($"Корабль {ship.shipName} не расставлен!");
+                Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {ship.shipName} Г­ГҐ Г°Г Г±Г±ГІГ ГўГ«ГҐГ­!");
                 return false;
             }
         }
         return true;
     }
+
 }

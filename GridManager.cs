@@ -1,35 +1,33 @@
-//GirdManager.cs
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [Header("Настройки сетки")]
+    [Header("ГЌГ Г±ГІГ°Г®Г©ГЄГЁ Г±ГҐГІГЄГЁ")]
     [SerializeField] private GameObject cellPrefab;
     [SerializeField] private int gridSize = 10;
     [SerializeField] private float cellSpacing = 1.1f;
 
-    [Header("Цвета клеток (оригинальные)")]
+    [Header("Г–ГўГҐГІГ  ГЄГ«ГҐГІГ®ГЄ (Г®Г°ГЁГЈГЁГ­Г Г«ГјГ­Г»ГҐ)")]
     [SerializeField] private Color lightCellColor = Color.white;
     [SerializeField] private Color darkCellColor = Color.gray;
 
-    [Header("Цвета выстрелов")]
+    [Header("Г–ГўГҐГІГ  ГўГ»Г±ГІГ°ГҐГ«Г®Гў")]
     [SerializeField] private Color currentTurnShotColor = new Color(0.3f, 0.3f, 0.3f, 0.8f);
     [SerializeField] private Color previousTurnShotColor = new Color(0.7f, 0.7f, 0.7f, 0.6f);
 
-    [Header("Настройки границы")]
+    [Header("ГЌГ Г±ГІГ°Г®Г©ГЄГЁ ГЈГ°Г Г­ГЁГ¶Г»")]
     [SerializeField] private bool createBorder = true;
-    public Material borderMaterial; //  ЗАМЕНИЛИ Color на Material
+    public Material borderMaterial;
     [SerializeField] private float borderThickness = 0.3f;
     [SerializeField] private float borderHeight = 0.5f;
 
-    [Header("Отладка")]
+    [Header("ГЋГІГ«Г Г¤ГЄГ ")]
     [SerializeField] private bool showGridInEditor = true;
 
     private Cell[,] gridCells;
     private GameObject gridParent;
 
-    // Система отслеживания выстрелов
     private List<Vector2Int> currentTurnShots = new List<Vector2Int>();
     private List<Vector2Int> previousTurnShots = new List<Vector2Int>();
 
@@ -42,7 +40,7 @@ public class GridManager : MonoBehaviour
             CreateBorder();
         }
 
-        Debug.Log($"Сетка {gridSize}x{gridSize} создана успешно!");
+        Debug.Log($"Г‘ГҐГІГЄГ  {gridSize}x{gridSize} Г±Г®Г§Г¤Г Г­Г  ГіГ±ГЇГҐГёГ­Г®!");
     }
 
     void InitializeGrid()
@@ -80,7 +78,6 @@ public class GridManager : MonoBehaviour
 
                 cellGO.name = $"Cell_{x}_{y}";
 
-                // Настройка цвета с созданием Material Instance
                 SetupCellColor(cellGO, x, y);
             }
         }
@@ -91,7 +88,6 @@ public class GridManager : MonoBehaviour
         Renderer renderer = cellGO.GetComponent<Renderer>();
         if (renderer != null)
         {
-            // СОЗДАЕМ MATERIAL INSTANCE для каждой клетки
             renderer.material = new Material(renderer.material);
 
             bool isDark = (x + y) % 2 == 0;
@@ -111,29 +107,27 @@ public class GridManager : MonoBehaviour
         float totalSize = (gridSize - 1) * cellSpacing;
         float borderOffset = 0.6f;
 
-        // СОХРАНИЛИ ВСЕ КООРДИНАТЫ, изменили только параметр color на material
         CreateBorderPiece(borderParent, "TopBorder",
             new Vector3(totalSize / 2, 0, totalSize + borderThickness / 2 + borderOffset),
             new Vector3(totalSize + borderThickness * 2 + borderOffset * 2, borderHeight, borderThickness),
-            borderMaterial); //  ИЗМЕНИЛИ: был borderColor, стал borderMaterial
+            borderMaterial);
 
         CreateBorderPiece(borderParent, "BottomBorder",
             new Vector3(totalSize / 2, 0, -borderThickness / 2 - borderOffset),
             new Vector3(totalSize + borderThickness * 2 + borderOffset * 2, borderHeight, borderThickness),
-            borderMaterial); //  ИЗМЕНИЛИ
+            borderMaterial);
 
         CreateBorderPiece(borderParent, "LeftBorder",
             new Vector3(-borderThickness / 2 - borderOffset, 0, totalSize / 2),
             new Vector3(borderThickness, borderHeight, totalSize + borderOffset * 2),
-            borderMaterial); //  ИЗМЕНИЛИ
+            borderMaterial);
 
         CreateBorderPiece(borderParent, "RightBorder",
             new Vector3(totalSize + borderThickness / 2 + borderOffset, 0, totalSize / 2),
             new Vector3(borderThickness, borderHeight, totalSize + borderOffset * 2),
-            borderMaterial); // ИЗМЕНИЛИ
+            borderMaterial);
     }
 
-    // ИЗМЕНИЛИ ПАРАМЕТР МЕТОДА: Color color - Material material
     void CreateBorderPiece(GameObject parent, string name, Vector3 position, Vector3 scale, Material material)
     {
         GameObject borderPiece = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -142,22 +136,18 @@ public class GridManager : MonoBehaviour
         borderPiece.transform.localPosition = position;
         borderPiece.transform.localScale = scale;
 
-        // Убираем коллайдер если не нужен
         Destroy(borderPiece.GetComponent<Collider>());
 
-        // ИЗМЕНИЛИ: вместо установки цвета материала, назначаем готовый материал
         Renderer renderer = borderPiece.GetComponent<Renderer>();
 
         if (material != null)
         {
-            renderer.material = material; // Просто назначаем готовый материал
+            renderer.material = material;
         }
         else
         {
-            // Fallback если материал не назначен
-            Debug.LogWarning($"Material для границы не назначен! Создаем временный.");
+            Debug.LogWarning($"Material Г¤Г«Гї ГЈГ°Г Г­ГЁГ¶Г» Г­ГҐ Г­Г Г§Г­Г Г·ГҐГ­! Г‘Г®Г§Г¤Г ГҐГ¬ ГўГ°ГҐГ¬ГҐГ­Г­Г»Г©.");
 
-            // Создаем простой материал с коричневым цветом
             Material fallbackMat = new Material(Shader.Find("Mobile/Diffuse"));
             fallbackMat.color = new Color(0.65f, 0.5f, 0.35f);
             renderer.material = fallbackMat;
@@ -188,7 +178,6 @@ public class GridManager : MonoBehaviour
         return new Vector3(x * cellSpacing, 0, y * cellSpacing);
     }
 
-    // ========== МЕТОДЫ ПОДСВЕТКИ ==========
 
     public void HighlightCell(int x, int y, bool highlight, Color color)
     {
@@ -200,14 +189,12 @@ public class GridManager : MonoBehaviour
 
         if (highlight)
         {
-            // Подсвечиваем
             Color highlightColor = color;
             highlightColor.a = 0.7f;
             renderer.material.color = highlightColor;
         }
         else
         {
-            // Восстанавливаем базовое состояние
             RestoreCellToBaseState(x, y);
         }
     }
@@ -244,39 +231,38 @@ public class GridManager : MonoBehaviour
         Cell cell = GetCell(x, y);
         if (cell == null)
         {
-            Debug.LogError($"RestoreCellToBaseState: Не найден Cell [{x},{y}]");
+            Debug.LogError($"RestoreCellToBaseState: ГЌГҐ Г­Г Г©Г¤ГҐГ­ Cell [{x},{y}]");
             return;
         }
 
         Renderer renderer = cell.GetComponent<Renderer>();
         if (renderer == null)
         {
-            Debug.LogError($"RestoreCellToBaseState: Нет Renderer у Cell [{x},{y}]");
+            Debug.LogError($"RestoreCellToBaseState: ГЌГҐГІ Renderer Гі Cell [{x},{y}]");
             return;
         }
 
         Vector2Int key = new Vector2Int(x, y);
 
-        // Отладочная информация
         bool isCurrent = currentTurnShots.Contains(key);
         bool isPrevious = previousTurnShots.Contains(key);
 
         if (isCurrent)
         {
             renderer.material.color = currentTurnShotColor;
-            Debug.Log($"RestoreCellToBaseState: [{x},{y}] -> currentTurnShotColor (в списке currentTurnShots)");
+            Debug.Log($"RestoreCellToBaseState: [{x},{y}] -> currentTurnShotColor (Гў Г±ГЇГЁГ±ГЄГҐ currentTurnShots)");
         }
         else if (isPrevious)
         {
             renderer.material.color = previousTurnShotColor;
-            Debug.Log($"RestoreCellToBaseState: [{x},{y}] -> previousTurnShotColor (в списке previousTurnShots)");
+            Debug.Log($"RestoreCellToBaseState: [{x},{y}] -> previousTurnShotColor (Гў Г±ГЇГЁГ±ГЄГҐ previousTurnShots)");
         }
         else
         {
             bool isDark = (x + y) % 2 == 0;
             Color baseColor = isDark ? darkCellColor : lightCellColor;
             renderer.material.color = baseColor;
-            Debug.Log($"RestoreCellToBaseState: [{x},{y}] -> базовый цвет");
+            Debug.Log($"RestoreCellToBaseState: [{x},{y}] -> ГЎГ Г§Г®ГўГ»Г© Г¶ГўГҐГІ");
         }
     }
 
@@ -291,20 +277,17 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    // ========== МЕТОДЫ ДЛЯ СИСТЕМЫ ВЫСТРЕЛОВ ==========
 
     public void AddShot(Vector2Int cell)
     {
         Debug.Log($"=== AddShot [{cell.x},{cell.y}] ===");
 
-        // 1. СНАЧАЛА добавляем в currentTurnShots
         if (!currentTurnShots.Contains(cell))
         {
             currentTurnShots.Add(cell);
-            Debug.Log($"  Добавлен в currentTurnShots");
+            Debug.Log($"  Г„Г®ГЎГ ГўГ«ГҐГ­ Гў currentTurnShots");
         }
 
-        // 2. Устанавливаем цвет СРАЗУ
         Cell cellObj = GetCell(cell.x, cell.y);
         if (cellObj != null)
         {
@@ -312,20 +295,19 @@ public class GridManager : MonoBehaviour
             if (renderer != null)
             {
                 renderer.material.color = currentTurnShotColor;
-                Debug.Log($"  Установлен currentTurnShotColor");
+                Debug.Log($"  Г“Г±ГІГ Г­Г®ГўГ«ГҐГ­ currentTurnShotColor");
             }
         }
 
-        // 3. ПОТОМ удаляем из previousTurnShots (если там есть)
         if (previousTurnShots.Contains(cell))
         {
             previousTurnShots.Remove(cell);
-            Debug.Log($"  Удален из previousTurnShots");
+            Debug.Log($"  Г“Г¤Г Г«ГҐГ­ ГЁГ§ previousTurnShots");
         }
 
-        Debug.Log($"Итог: current содержит? {currentTurnShots.Contains(cell)}");
-        Debug.Log($"Итог: previous содержит? {previousTurnShots.Contains(cell)}");
-        Debug.Log($"=== Конец AddShot ===");
+        Debug.Log($"Г€ГІГ®ГЈ: current Г±Г®Г¤ГҐГ°Г¦ГЁГІ? {currentTurnShots.Contains(cell)}");
+        Debug.Log($"Г€ГІГ®ГЈ: previous Г±Г®Г¤ГҐГ°Г¦ГЁГІ? {previousTurnShots.Contains(cell)}");
+        Debug.Log($"=== ГЉГ®Г­ГҐГ¶ AddShot ===");
     }
 
     public bool WasShotThisTurn(Vector2Int cell)
@@ -345,21 +327,17 @@ public class GridManager : MonoBehaviour
 
     public void NextTurn()
     {
-        Debug.Log("=== НАЧАЛО NextTurn() ===");
-        Debug.Log($"До перехода: currentTurnShots = {currentTurnShots.Count}, previousTurnShots = {previousTurnShots.Count}");
+        Debug.Log("=== ГЌГЂГ—ГЂГ‹ГЋ NextTurn() ===");
+        Debug.Log($"Г„Г® ГЇГҐГ°ГҐГµГ®Г¤Г : currentTurnShots = {currentTurnShots.Count}, previousTurnShots = {previousTurnShots.Count}");
 
-        // 1. Сохраняем текущие выстрелы во временную переменную
         List<Vector2Int> shotsToMove = new List<Vector2Int>(currentTurnShots);
 
-        // 2. Очищаем текущие выстрелы
         currentTurnShots.Clear();
 
-        // 3. Устанавливаем предыдущие выстрелы
         previousTurnShots = shotsToMove;
 
-        Debug.Log($"После перемещения: currentTurnShots = {currentTurnShots.Count}, previousTurnShots = {previousTurnShots.Count}");
+        Debug.Log($"ГЏГ®Г±Г«ГҐ ГЇГҐГ°ГҐГ¬ГҐГ№ГҐГ­ГЁГї: currentTurnShots = {currentTurnShots.Count}, previousTurnShots = {previousTurnShots.Count}");
 
-        // 4. Обновляем цвет клеток, которые теперь стали "прошлыми"
         foreach (Vector2Int cell in previousTurnShots)
         {
             Cell cellObj = GetCell(cell.x, cell.y);
@@ -369,16 +347,16 @@ public class GridManager : MonoBehaviour
                 if (renderer != null)
                 {
                     renderer.material.color = previousTurnShotColor;
-                    Debug.Log($"NextTurn: Клетка [{cell.x},{cell.y}] теперь previousTurnShotColor");
+                    Debug.Log($"NextTurn: ГЉГ«ГҐГІГЄГ  [{cell.x},{cell.y}] ГІГҐГЇГҐГ°Гј previousTurnShotColor");
                 }
             }
             else
             {
-                Debug.LogError($"NextTurn: Не найден Cell для [{cell.x},{cell.y}]");
+                Debug.LogError($"NextTurn: ГЌГҐ Г­Г Г©Г¤ГҐГ­ Cell Г¤Г«Гї [{cell.x},{cell.y}]");
             }
         }
 
-        Debug.Log("=== КОНЕЦ NextTurn() ===");
+        Debug.Log("=== ГЉГЋГЌГ…Г– NextTurn() ===");
     }
 
     public void ClearAllShots()
@@ -387,7 +365,7 @@ public class GridManager : MonoBehaviour
         previousTurnShots.Clear();
         ResetAllHighlights();
 
-        Debug.Log("Все выстрелы очищены");
+        Debug.Log("Г‚Г±ГҐ ГўГ»Г±ГІГ°ГҐГ«Г» Г®Г·ГЁГ№ГҐГ­Г»");
     }
 
     void OnDrawGizmos()
@@ -408,4 +386,5 @@ public class GridManager : MonoBehaviour
             }
         }
     }
+
 }

@@ -1,9 +1,8 @@
-//GameManager.cs
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement; // ДОБАВЬ ЭТУ СТРОЧКУ
+using UnityEngine.SceneManagement;
 
 public enum GamePhase
 {
@@ -17,15 +16,15 @@ public enum GamePhase
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Игроки")]
+    [Header("Г€ГЈГ°Г®ГЄГЁ")]
     [SerializeField] private Player player1;
     [SerializeField] private Player player2;
 
-    [Header("Сетки")]
+    [Header("Г‘ГҐГІГЄГЁ")]
     [SerializeField] private GridManager player1Grid;
     [SerializeField] private GridManager player2Grid;
 
-    [Header("Камеры")]
+    [Header("ГЉГ Г¬ГҐГ°Г»")]
     [SerializeField] private Camera player1Camera;
     [SerializeField] private Camera player2Camera;
 
@@ -35,14 +34,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject transitionInstructions;
     [SerializeField] private GameObject shotStatusText;
     [SerializeField] private GameObject victoryScreen;
-    [SerializeField] private GameObject victoryText; // НОВЫЙ: текст победы
-    [SerializeField] private GameObject player1SetupText; // НОВЫЙ: текст для игрока 1
-    [SerializeField] private GameObject player2SetupText; // НОВЫЙ: текст для игрока 2
+    [SerializeField] private GameObject victoryText;
+    [SerializeField] private GameObject player1SetupText;
+    [SerializeField] private GameObject player2SetupText;
 
-    [Header("Контроллер боя")]
+    [Header("ГЉГ®Г­ГІГ°Г®Г«Г«ГҐГ° ГЎГ®Гї")]
     [SerializeField] private BattleGridController battleGridController;
 
-    [Header("Настройки игры")]
+    [Header("ГЌГ Г±ГІГ°Г®Г©ГЄГЁ ГЁГЈГ°Г»")]
     [SerializeField] private float endGameDelay = 3f;
 
     private GamePhase currentPhase = GamePhase.Player1Setup;
@@ -56,17 +55,16 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        // Находим BattleGridController если не назначен
         if (battleGridController == null)
         {
             battleGridController = FindObjectOfType<BattleGridController>();
             if (battleGridController == null)
             {
-                Debug.LogError("GameManager: BattleGridController не найден в сцене!");
+                Debug.LogError("GameManager: BattleGridController Г­ГҐ Г­Г Г©Г¤ГҐГ­ Гў Г±Г¶ГҐГ­ГҐ!");
             }
             else
             {
-                Debug.Log("GameManager: BattleGridController найден автоматически");
+                Debug.Log("GameManager: BattleGridController Г­Г Г©Г¤ГҐГ­ Г ГўГІГ®Г¬Г ГІГЁГ·ГҐГ±ГЄГЁ");
             }
         }
 
@@ -78,7 +76,6 @@ public class GameManager : MonoBehaviour
     {
         HandleInput();
 
-        // Перезапуск игры после победы
         if (canRestart && Input.GetKeyDown(KeyCode.R))
         {
             RestartGame();
@@ -87,12 +84,11 @@ public class GameManager : MonoBehaviour
 
     void InitializeGame()
     {
-        player1.Initialize("Игрок 1", player1Grid);
-        player2.Initialize("Игрок 2", player2Grid);
+        player1.Initialize("Г€ГЈГ°Г®ГЄ 1", player1Grid);
+        player2.Initialize("Г€ГЈГ°Г®ГЄ 2", player2Grid);
         player1.HideAllShips();
         player2.HideAllShips();
 
-        // Скрываем экран победы
         if (victoryScreen != null)
         {
             victoryScreen.SetActive(false);
@@ -104,44 +100,41 @@ public class GameManager : MonoBehaviour
     void StartSetupPhase()
     {
         Debug.Log($"=== StartSetupPhase: {currentPhase} ===");
-        Debug.Log($"player1SetupText назначен: {player1SetupText != null}");
-        Debug.Log($"player2SetupText назначен: {player2SetupText != null}");
+        Debug.Log($"player1SetupText Г­Г Г§Г­Г Г·ГҐГ­: {player1SetupText != null}");
+        Debug.Log($"player2SetupText Г­Г Г§Г­Г Г·ГҐГ­: {player2SetupText != null}");
 
         switch (currentPhase)
         {
             case GamePhase.Player1Setup:
-                Debug.Log("Показываем player1SetupText");
+                Debug.Log("ГЏГ®ГЄГ Г§Г»ГўГ ГҐГ¬ player1SetupText");
                 if (player1SetupText != null)
                 {
                     player1SetupText.SetActive(true);
-                    Debug.Log($"player1SetupText активен: {player1SetupText.activeSelf}");
+                    Debug.Log($"player1SetupText Г ГЄГІГЁГўГҐГ­: {player1SetupText.activeSelf}");
                 }
                 if (player2SetupText != null)
                 {
                     player2SetupText.SetActive(false);
-                    Debug.Log($"player2SetupText активен: {player2SetupText.activeSelf}");
+                    Debug.Log($"player2SetupText Г ГЄГІГЁГўГҐГ­: {player2SetupText.activeSelf}");
                 }
                 StartPlayerSetup(player1, player1Grid, player1Camera);
                 break;
 
             case GamePhase.Player2Setup:
-                Debug.Log("Показываем player2SetupText");
+                Debug.Log("ГЏГ®ГЄГ Г§Г»ГўГ ГҐГ¬ player2SetupText");
                 if (player2SetupText != null)
                 {
                     player2SetupText.SetActive(true);
-                    Debug.Log($"player2SetupText активен: {player2SetupText.activeSelf}");
+                    Debug.Log($"player2SetupText Г ГЄГІГЁГўГҐГ­: {player2SetupText.activeSelf}");
                 }
                 if (player1SetupText != null)
                 {
                     player1SetupText.SetActive(false);
-                    Debug.Log($"player1SetupText активен: {player1SetupText.activeSelf}");
+                    Debug.Log($"player1SetupText Г ГЄГІГЁГўГҐГ­: {player1SetupText.activeSelf}");
                 }
                 StartPlayerSetup(player2, player2Grid, player2Camera);
                 break;
         }
-
-        // УБЕРИ ЭТУ СТРОЧКУ - она перекрывает тексты игроков:
-        // setupInstructions.SetActive(true);
 
         turnInstructions.SetActive(false);
         if (transitionInstructions != null) transitionInstructions.SetActive(false);
@@ -160,14 +153,10 @@ public class GameManager : MonoBehaviour
         player.ShowAllShips();
         player.EnableShipPlacement();
 
-        // Отключаем BattleGridController во время расстановки
         if (battleGridController != null)
         {
             battleGridController.DisableController();
         }
-
-        // УБЕРИ ЭТУ СТРОЧКУ - она перекрывает тексты игроков:
-        // setupInstructions.SetActive(true);
 
         turnInstructions.SetActive(false);
         if (transitionInstructions != null) transitionInstructions.SetActive(false);
@@ -176,7 +165,6 @@ public class GameManager : MonoBehaviour
 
     void StartBattlePhase()
     {
-        // Скрываем тексты расстановки при начале боя
         if (player1SetupText != null) player1SetupText.SetActive(false);
         if (player2SetupText != null) player2SetupText.SetActive(false);
 
@@ -206,22 +194,20 @@ public class GameManager : MonoBehaviour
         player1.HideAllShips();
         player2.HideAllShips();
 
-        // Показываем потопленные корабли противника игроку
         opponent.RevealAllSunkShips();
-        Debug.Log($"В начале хода {player.playerName} показаны потопленные корабли {opponent.playerName}");
+        Debug.Log($"Г‚ Г­Г Г·Г Г«ГҐ ГµГ®Г¤Г  {player.playerName} ГЇГ®ГЄГ Г§Г Г­Г» ГЇГ®ГІГ®ГЇГ«ГҐГ­Г­Г»ГҐ ГЄГ®Г°Г ГЎГ«ГЁ {opponent.playerName}");
 
         player.ShowAllShips();
         player.ResetShipsActions();
         player.EnableShipMovement();
 
-        // Настраиваем BattleGridController
         if (battleGridController != null)
         {
             GridManager targetGrid = (player == player1) ? player2Grid : player1Grid;
             Camera targetCamera = (player == player1) ? player1Camera : player2Camera;
 
             battleGridController.SetupForPlayerTurn(player, opponent, targetGrid, targetCamera);
-            Debug.Log($"BattleGridController настроен для стрельбы {player.playerName} -> {opponent.playerName}");
+            Debug.Log($"BattleGridController Г­Г Г±ГІГ°Г®ГҐГ­ Г¤Г«Гї Г±ГІГ°ГҐГ«ГјГЎГ» {player.playerName} -> {opponent.playerName}");
         }
 
         setupInstructions.SetActive(false);
@@ -231,24 +217,21 @@ public class GameManager : MonoBehaviour
 
         isTransitioning = false;
 
-        Debug.Log($"Ход {player.playerName}. Видны потопленные корабли противника.");
+        Debug.Log($"Г•Г®Г¤ {player.playerName}. Г‚ГЁГ¤Г­Г» ГЇГ®ГІГ®ГЇГ«ГҐГ­Г­Г»ГҐ ГЄГ®Г°Г ГЎГ«ГЁ ГЇГ°Г®ГІГЁГўГ­ГЁГЄГ .");
     }
 
-    // Обработка выстрела из BattleGridController
     public void ProcessBattleShot(bool hit)
     {
         ShowShotMessage(hit);
 
         if (hit)
         {
-            Debug.Log($"{currentPlayer.playerName} попал! Может стрелять еще раз");
-            // Проверяем победу после попадания
+            Debug.Log($"{currentPlayer.playerName} ГЇГ®ГЇГ Г«! ГЊГ®Г¦ГҐГІ Г±ГІГ°ГҐГ«ГїГІГј ГҐГ№ГҐ Г°Г Г§");
             CheckGameOver();
         }
         else
         {
-            Debug.Log($"{currentPlayer.playerName} промахнулся! Переход хода");
-            // Проверяем победу перед сменой хода
+            Debug.Log($"{currentPlayer.playerName} ГЇГ°Г®Г¬Г ГµГ­ГіГ«Г±Гї! ГЏГҐГ°ГҐГµГ®Г¤ ГµГ®Г¤Г ");
             CheckGameOver();
 
             if (currentPhase != GamePhase.GameOver)
@@ -273,8 +256,7 @@ public class GameManager : MonoBehaviour
             switch (currentPhase)
             {
                 case GamePhase.Player1Setup:
-                    // Проверяем можно ли закончить расстановку
-                    if (EndPlayerSetup()) // Возвращает true если все корабли расставлены
+                    if (EndPlayerSetup())
                     {
                         currentPhase = GamePhase.TransitionPhase;
                         StartCoroutine(TransitionToPhase(GamePhase.Player2Setup, 0.5f));
@@ -282,8 +264,7 @@ public class GameManager : MonoBehaviour
                     break;
 
                 case GamePhase.Player2Setup:
-                    // Проверяем можно ли закончить расстановку
-                    if (EndPlayerSetup()) // Возвращает true если все корабли расставлены
+                    if (EndPlayerSetup())
                     {
                         currentPhase = GamePhase.TransitionPhase;
                         StartCoroutine(TransitionToPhase(GamePhase.Player1Turn, 0.5f));
@@ -292,9 +273,8 @@ public class GameManager : MonoBehaviour
 
                 case GamePhase.Player1Turn:
                 case GamePhase.Player2Turn:
-                    // Space в фазе боя - принудительный переход хода
-                    Debug.Log($"Принудительный переход хода от {currentPlayer.playerName}");
-                    CheckGameOver(); // Проверяем перед переходом
+                    Debug.Log($"ГЏГ°ГЁГ­ГіГ¤ГЁГІГҐГ«ГјГ­Г»Г© ГЇГҐГ°ГҐГµГ®Г¤ ГµГ®Г¤Г  Г®ГІ {currentPlayer.playerName}");
+                    CheckGameOver();
                     if (currentPhase != GamePhase.GameOver)
                     {
                         SwitchTurn();
@@ -311,13 +291,11 @@ public class GameManager : MonoBehaviour
         player1.HideAllShips();
         player2.HideAllShips();
 
-        // Отключаем BattleGridController
         if (battleGridController != null)
         {
             battleGridController.DisableController();
         }
 
-        // Отключаем движение кораблей
         if (currentPlayer != null)
         {
             currentPlayer.DisableShipMovement();
@@ -332,7 +310,7 @@ public class GameManager : MonoBehaviour
             transitionInstructions.SetActive(true);
         }
 
-        Debug.Log($"Переход к фазе {nextPhase}... Нажмите SPACE чтобы продолжить");
+        Debug.Log($"ГЏГҐГ°ГҐГµГ®Г¤ ГЄ ГґГ Г§ГҐ {nextPhase}... ГЌГ Г¦Г¬ГЁГІГҐ SPACE Г·ГІГ®ГЎГ» ГЇГ°Г®Г¤Г®Г«Г¦ГЁГІГј");
 
         yield return new WaitForSeconds(delay);
         yield return WaitForSpacePress();
@@ -354,14 +332,14 @@ public class GameManager : MonoBehaviour
 
     IEnumerator WaitForSpacePress()
     {
-        Debug.Log("Ожидание нажатия SPACE для продолжения...");
+        Debug.Log("ГЋГ¦ГЁГ¤Г Г­ГЁГҐ Г­Г Г¦Г ГІГЁГї SPACE Г¤Г«Гї ГЇГ°Г®Г¤Г®Г«Г¦ГҐГ­ГЁГї...");
 
         while (!Input.GetKeyDown(KeyCode.Space))
         {
             yield return null;
         }
 
-        Debug.Log("SPACE нажат, продолжаем...");
+        Debug.Log("SPACE Г­Г Г¦Г ГІ, ГЇГ°Г®Г¤Г®Г«Г¦Г ГҐГ¬...");
         isTransitioning = false;
 
         if (transitionInstructions != null)
@@ -374,25 +352,21 @@ public class GameManager : MonoBehaviour
     {
         if (currentPlayer != null)
         {
-            // Проверяем все ли корабли расставлены
-            if (currentPlayer.AllShipsPlaced()) //  Используем метод из Player
+            if (currentPlayer.AllShipsPlaced())
             {
                 currentPlayer.DisableShipPlacement();
-                Debug.Log($"Все корабли {currentPlayer.playerName} расставлены!");
+                Debug.Log($"Г‚Г±ГҐ ГЄГ®Г°Г ГЎГ«ГЁ {currentPlayer.playerName} Г°Г Г±Г±ГІГ ГўГ«ГҐГ­Г»!");
                 return true;
             }
             else
             {
-                // Показываем сообщение игроку
-                Debug.Log($"Не все корабли {currentPlayer.playerName} расставлены!");
+                Debug.Log($"ГЌГҐ ГўГ±ГҐ ГЄГ®Г°Г ГЎГ«ГЁ {currentPlayer.playerName} Г°Г Г±Г±ГІГ ГўГ«ГҐГ­Г»!");
 
-                // Можно показать UI сообщение
                 if (shotStatusText != null)
                 {
                     Text textComponent = shotStatusText.GetComponent<Text>();
                     if (textComponent != null)
                     {
-                        // Считаем сколько осталось
                         int total = 0;
                         int placed = 0;
                         foreach (Ship ship in currentPlayer.ships)
@@ -404,7 +378,7 @@ public class GameManager : MonoBehaviour
                             }
                         }
 
-                        textComponent.text = $"РАССТАВЬТЕ ВСЕ КОРАБЛИ!\nОсталось: {total - placed}";
+                        textComponent.text = $"ГђГЂГ‘Г‘Г’ГЂГ‚ГњГ’Г… Г‚Г‘Г… ГЉГЋГђГЂГЃГ‹Г€!\nГЋГ±ГІГ Г«Г®Г±Гј: {total - placed}";
                         textComponent.color = Color.yellow;
                         shotStatusText.SetActive(true);
                         StartCoroutine(HideMessageAfterDelay(2f));
@@ -415,7 +389,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.LogError("currentPlayer равен null в EndPlayerSetup!");
+        Debug.LogError("currentPlayer Г°Г ГўГҐГ­ null Гў EndPlayerSetup!");
         return false;
     }
 
@@ -433,12 +407,12 @@ public class GameManager : MonoBehaviour
 
         if (hit)
         {
-            textComponent.text = "ПОПАДАНИЕ! Стреляйте еще раз";
+            textComponent.text = "ГЏГЋГЏГЂГ„ГЂГЌГ€Г…! Г‘ГІГ°ГҐГ«ГїГ©ГІГҐ ГҐГ№ГҐ Г°Г Г§";
             textComponent.color = Color.green;
         }
         else
         {
-            textComponent.text = "ПРОМАХ! Ход переходит противнику";
+            textComponent.text = "ГЏГђГЋГЊГЂГ•! Г•Г®Г¤ ГЇГҐГ°ГҐГµГ®Г¤ГЁГІ ГЇГ°Г®ГІГЁГўГ­ГЁГЄГі";
             textComponent.color = Color.red;
         }
 
@@ -460,12 +434,11 @@ public class GameManager : MonoBehaviour
 
     void CheckSunkShips()
     {
-        // Просто логируем
         foreach (Ship ship in player1.GetComponentsInChildren<Ship>())
         {
             if (ship.isSunk)
             {
-                Debug.Log($"Корабль {ship.shipName} игрока 1 потоплен");
+                Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {ship.shipName} ГЁГЈГ°Г®ГЄГ  1 ГЇГ®ГІГ®ГЇГ«ГҐГ­");
             }
         }
 
@@ -473,14 +446,14 @@ public class GameManager : MonoBehaviour
         {
             if (ship.isSunk)
             {
-                Debug.Log($"Корабль {ship.shipName} игрока 2 потоплен");
+                Debug.Log($"ГЉГ®Г°Г ГЎГ«Гј {ship.shipName} ГЁГЈГ°Г®ГЄГ  2 ГЇГ®ГІГ®ГЇГ«ГҐГ­");
             }
         }
     }
 
     void SwitchTurn()
     {
-        Debug.Log("=== SwitchTurn() начался ===");
+        Debug.Log("=== SwitchTurn() Г­Г Г·Г Г«Г±Гї ===");
 
         CheckSunkShips();
 
@@ -490,7 +463,6 @@ public class GameManager : MonoBehaviour
             currentPlayer.HideAllShips();
         }
 
-        // Отключаем BattleGridController
         if (battleGridController != null)
         {
             battleGridController.DisableController();
@@ -521,19 +493,19 @@ public class GameManager : MonoBehaviour
             Player winner;
             Player loser;
 
-            if (player2AllSunk) // Игрок 2 потоплен -> победил Игрок 1
+            if (player2AllSunk)
             {
                 winnerName = player1.playerName;
                 winner = player1;
                 loser = player2;
-                Debug.Log($"{player1.playerName} победил! Все корабли {player2.playerName} потоплены!");
+                Debug.Log($"{player1.playerName} ГЇГ®ГЎГҐГ¤ГЁГ«! Г‚Г±ГҐ ГЄГ®Г°Г ГЎГ«ГЁ {player2.playerName} ГЇГ®ГІГ®ГЇГ«ГҐГ­Г»!");
             }
-            else // Игрок 1 потоплен -> победил Игрок 2
+            else
             {
                 winnerName = player2.playerName;
                 winner = player2;
                 loser = player1;
-                Debug.Log($"{player2.playerName} победил! Все корабли {player1.playerName} потоплены!");
+                Debug.Log($"{player2.playerName} ГЇГ®ГЎГҐГ¤ГЁГ«! Г‚Г±ГҐ ГЄГ®Г°Г ГЎГ«ГЁ {player1.playerName} ГЇГ®ГІГ®ГЇГ«ГҐГ­Г»!");
             }
 
             EndGame(winner, loser);
@@ -542,37 +514,30 @@ public class GameManager : MonoBehaviour
 
     void EndGame(Player winner, Player loser)
     {
-        Debug.Log($"=== КОНЕЦ ИГРЫ ===");
-        Debug.Log($"Победитель: {winner.playerName}");
-        Debug.Log($"Проигравший: {loser.playerName}");
+        Debug.Log($"=== ГЉГЋГЌГ…Г– Г€ГѓГђГ› ===");
+        Debug.Log($"ГЏГ®ГЎГҐГ¤ГЁГІГҐГ«Гј: {winner.playerName}");
+        Debug.Log($"ГЏГ°Г®ГЁГЈГ°Г ГўГёГЁГ©: {loser.playerName}");
 
-        // 1. Показываем ВСЕ корабли на обеих досках
         player1.ShowAllShips();
         player2.ShowAllShips();
 
-        // 2. Показываем ВСЕ потопленные корабли проигравшего
         loser.RevealAllSunkShips();
 
-        // 3. Также показываем все корабли победителя
         foreach (Ship ship in winner.GetComponentsInChildren<Ship>())
         {
             ship.SetVisible(true);
         }
 
-        // 4. Отключаем BattleGridController
         if (battleGridController != null)
         {
             battleGridController.DisableController();
         }
 
-        // 5. Отключаем движение кораблей
         player1.DisableShipMovement();
         player2.DisableShipMovement();
 
-        // 6. Показываем экран победы
         currentPhase = GamePhase.GameOver;
 
-        // Скрываем все UI кроме victoryText
         if (setupInstructions != null) setupInstructions.SetActive(false);
         if (turnInstructions != null) turnInstructions.SetActive(false);
         if (transitionInstructions != null) transitionInstructions.SetActive(false);
@@ -580,66 +545,59 @@ public class GameManager : MonoBehaviour
         if (player1SetupText != null) player1SetupText.SetActive(false);
         if (player2SetupText != null) player2SetupText.SetActive(false);
 
-        // Показываем текст победы (GameObject)
         if (victoryText != null)
         {
             victoryText.SetActive(true);
 
-            // Меняем текст в компоненте Text внутри GameObject
             Text textComponent = victoryText.GetComponent<Text>();
             if (textComponent != null)
             {
-                textComponent.text = $"{winner.playerName} победил!\nНажмите R для новой игры";
+                textComponent.text = $"{winner.playerName} ГЇГ®ГЎГҐГ¤ГЁГ«!\nГЌГ Г¦Г¬ГЁГІГҐ R Г¤Г«Гї Г­Г®ГўГ®Г© ГЁГЈГ°Г»";
             }
         }
 
-        // 7. Выводим финальную статистику
-        Debug.Log($"=== ФИНАЛЬНАЯ СТАТИСТИКА ===");
-        Debug.Log($"Победитель {winner.playerName}:");
+        Debug.Log($"=== Г”Г€ГЌГЂГ‹ГњГЌГЂГџ Г‘Г’ГЂГ’Г€Г‘Г’Г€ГЉГЂ ===");
+        Debug.Log($"ГЏГ®ГЎГҐГ¤ГЁГІГҐГ«Гј {winner.playerName}:");
         int winnerAlive = 0;
         foreach (Ship ship in winner.GetComponentsInChildren<Ship>())
         {
             if (!ship.isSunk)
             {
                 winnerAlive++;
-                Debug.Log($"  {ship.shipName} - цел");
+                Debug.Log($"  {ship.shipName} - Г¶ГҐГ«");
             }
             else
             {
-                Debug.Log($"  {ship.shipName} - потоплен");
+                Debug.Log($"  {ship.shipName} - ГЇГ®ГІГ®ГЇГ«ГҐГ­");
             }
         }
 
-        Debug.Log($"Проигравший {loser.playerName}:");
+        Debug.Log($"ГЏГ°Г®ГЁГЈГ°Г ГўГёГЁГ© {loser.playerName}:");
         foreach (Ship ship in loser.GetComponentsInChildren<Ship>())
         {
             if (ship.isSunk)
             {
-                Debug.Log($"  {ship.shipName} - потоплен");
+                Debug.Log($"  {ship.shipName} - ГЇГ®ГІГ®ГЇГ«ГҐГ­");
             }
             else
             {
-                Debug.Log($"  {ship.shipName} - цел");
+                Debug.Log($"  {ship.shipName} - Г¶ГҐГ«");
             }
         }
 
-        Debug.Log($"Осталось целых кораблей у победителя: {winnerAlive}");
-        Debug.Log($"=== Нажмите R для новой игры ===");
+        Debug.Log($"ГЋГ±ГІГ Г«Г®Г±Гј Г¶ГҐГ«Г»Гµ ГЄГ®Г°Г ГЎГ«ГҐГ© Гі ГЇГ®ГЎГҐГ¤ГЁГІГҐГ«Гї: {winnerAlive}");
+        Debug.Log($"=== ГЌГ Г¦Г¬ГЁГІГҐ R Г¤Г«Гї Г­Г®ГўГ®Г© ГЁГЈГ°Г» ===");
 
-        // 8. Включаем возможность перезапуска
         canRestart = true;
     }
 
-    // Перезапуск игры (перезагрузка сцены)
     void RestartGame()
     {
-        // Скрываем текст победы
         if (victoryText != null)
         {
             victoryText.SetActive(false);
         }
 
-        // Перезагружаем сцену
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
@@ -649,4 +607,5 @@ public class GameManager : MonoBehaviour
         if (player2Camera != null) player2Camera.gameObject.SetActive(false);
         if (cam != null) cam.gameObject.SetActive(true);
     }
+
 }

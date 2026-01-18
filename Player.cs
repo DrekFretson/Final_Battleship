@@ -4,21 +4,21 @@ using System.Linq;
 
 public class Player : MonoBehaviour
 {
-    [Header("Íàñòðîéêè èãðîêà")]
+    [Header("Настройки игрока")]
     public string playerName;
     [SerializeField] public List<Ship> ships = new List<Ship>();
 
-    [Header("Êîìïîíåíòû")]
+    [Header("Компоненты")]
     [SerializeField] private ShipPlacer shipPlacer;
     [SerializeField] private ShipMovementController movementController;
 
-    [Header("Ïîëå ñòðåëüáû")]
-    [SerializeField] private GridManager battleGrid;
+    [Header("Поле стрельбы")]
+    [SerializeField] public GridManager battleGrid;
 
     private GridManager playerGrid;
     private Vector2Int selectedTarget = new Vector2Int(-1, -1);
     private bool hasTakenActionThisTurn = false;
-    private List<Vector2Int> incomingShots = new List<Vector2Int>();
+    private List<Vector2Int> incomingShots = new List<Vector2Int>(); // выстрелы по этому игроку
 
     public void Initialize(string name, GridManager grid)
     {
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
 
             if (ship.owner != null && ship.owner != this)
             {
-                Debug.LogWarning($"Óäàëÿåì êîðàáëü {ship.shipName} èç ñïèñêà {playerName} - îí ïðèíàäëåæèò {ship.owner.playerName}");
+                Debug.LogWarning($"Удаляем корабль {ship.shipName} из списка {playerName} - он принадлежит {ship.owner.playerName}");
                 shipsToRemove.Add(ship);
             }
         }
@@ -58,7 +58,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void EnableShipPlacement()
+    public virtual void EnableShipPlacement()
     {
         if (shipPlacer != null)
         {
@@ -66,7 +66,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"ShipPlacer íå íàéäåí äëÿ èãðîêà {playerName}");
+            Debug.LogError($"ShipPlacer не найден для игрока {playerName}");
         }
     }
 
@@ -78,7 +78,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void EnableShipMovement()
+    public virtual void EnableShipMovement()
     {
         if (movementController != null)
         {
@@ -95,37 +95,42 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool TakeHit(Vector2Int target)
+    public virtual bool TakeHit(Vector2Int target)
     {
         bool hit = false;
-        Ship sunkShip = null;
+        Ship sunkShip = null; // запоминаем, какой корабль потопили
 
         foreach (Ship ship in ships)
         {
             if (ship.IsHit(target))
             {
+                // запоминаем состояние до выстрела
                 bool wasSunkBefore = ship.isSunk;
 
+                // урон
                 ship.TakeDamage(target);
                 hit = true;
 
+                // если корабль только что потопили
                 if (!wasSunkBefore && ship.isSunk)
                 {
-                    sunkShip = ship;
-                    Debug.Log($"Êîðàáëü {ship.shipName} ïîòîïëåí ïðè âûñòðåëå â [{target.x},{target.y}]!");
+                    sunkShip = ship; // запоминаем потопленный корабль
+                    Debug.Log($"Корабль {ship.shipName} потоплен при выстреле в [{target.x},{target.y}]!");
                 }
             }
         }
 
+        // сохраняем информацию о выстреле
         incomingShots.Add(target);
 
+        // если потопили корабль - показываем его противнику
         if (sunkShip != null)
         {
             sunkShip.RevealToOpponent();
-            Debug.Log($"Êîðàáëü {sunkShip.shipName} ïîêàçàí ïðîòèâíèêó íåìåäëåííî!");
+            Debug.Log($"Корабль {sunkShip.shipName} показан противнику немедленно!");
         }
 
-        Debug.Log($"{playerName}: âûñòðåë ïî [{target.x},{target.y}] - {(hit ? "ÏÎÏÀÄÀÍÈÅ" : "ÏÐÎÌÀÕ")} {(sunkShip != null ? " è ÊÎÐÀÁËÜ ÏÎÒÎÏËÅÍ" : "")}");
+        Debug.Log($"{playerName}: выстрел по [{target.x},{target.y}] - {(hit ? "ПОПАДАНИЕ" : "ПРОМАХ")} {(sunkShip != null ? " и КОРАБЛЬ ПОТОПЛЕН" : "")}");
         return hit;
     }
 
@@ -141,7 +146,7 @@ public class Player : MonoBehaviour
         return true;
     }
 
-    public void ShowAllShips()
+    public virtual void ShowAllShips()
     {
         foreach (Ship ship in ships)
         {
@@ -157,60 +162,17 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool TrySelectTarget(Vector2Int target)
-    {
-        if (!hasTakenActionThisTurn)
-        {
-            selectedTarget = target;
-            if (battleGrid != null)
-            {
-                battleGrid.HighlightCellColor(target.x, target.y, Color.yellow);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    public bool HasSelectedTarget()
-    {
-        return selectedTarget.x >= 0 && selectedTarget.y >= 0;
-    }
-
-    public Vector2Int GetSelectedTarget()
-    {
-        return selectedTarget;
-    }
-
-    public void ClearTarget()
-    {
-        selectedTarget = new Vector2Int(-1, -1);
-    }
-
-    public void ResetTurnActions()
-    {
-        hasTakenActionThisTurn = false;
-    }
-
-    public void OnShipActionTaken()
-    {
-        hasTakenActionThisTurn = true;
-    }
-
     public void ResetShipsActions()
     {
         foreach (Ship ship in ships)
         {
             ship.hasActedThisTurn = false;
         }
-        Debug.Log($"{playerName} ñáðîñèë äåéñòâèÿ êîðàáëåé");
-    }
-
-    public GridManager GetPlayerGrid()
-    {
-        return playerGrid;
+        Debug.Log($"{playerName} сбросил действия кораблей");
     }
 
 
+    // показать ВСЕ потопленные корабли этого игрока
     public void RevealAllSunkShips()
     {
         int sunkCount = 0;
@@ -225,7 +187,7 @@ public class Player : MonoBehaviour
 
         if (sunkCount > 0)
         {
-            Debug.Log($"Ïîêàçàíî {sunkCount} ïîòîïëåííûõ êîðàáëåé èãðîêà {playerName}");
+            Debug.Log($"Показано {sunkCount} потопленных кораблей игрока {playerName}");
         }
     }
 
@@ -236,11 +198,15 @@ public class Player : MonoBehaviour
             if (ship == null) continue;
             if (!ship.isPlaced)
             {
-                Debug.Log($"Êîðàáëü {ship.shipName} íå ðàññòàâëåí!");
+                Debug.Log($"Корабль {ship.shipName} не расставлен!");
                 return false;
             }
         }
         return true;
     }
 
+    public GridManager GetPlayerGrid()
+    {
+        return playerGrid;
+    }
 }

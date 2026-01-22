@@ -46,7 +46,7 @@ public class GameManagerBot : MonoBehaviour
 
     void InitializeGame()
     {
-        // проверки обязательных полей
+        //проверки обязательных полей
         if (player == null)
         {
             Debug.LogError("GameManagerBot: player не назначен!");
@@ -59,14 +59,14 @@ public class GameManagerBot : MonoBehaviour
             return;
         }
 
-        // скрываем все UI при старте
+        //скрываем все UI при старте
         HideAllUI();
 
-        // инициализация игрока
+        //инициализация игрока
         player.Initialize("Игрок", playerGrid);
         player.HideAllShips();
 
-        // инициализация бота
+        //инициализация бота
         botPlayer.Initialize("Бот", botGrid);
         botPlayer.HideAllShips();
         botPlayer.RandomPlaceShips();
@@ -81,20 +81,20 @@ public class GameManagerBot : MonoBehaviour
     {
         currentPhase = BotGamePhase.PlayerSetup;
 
-        // показываем текст расстановки
+        //показываем текст расстановки
         if (playerSetupText != null)
         {
             playerSetupText.SetActive(true);
         }
 
-        // начинаем расстановку кораблей игрока
+        //начинаем расстановку кораблей игрока
         if (playerShipPlacer != null)
         {
             playerShipPlacer.BeginPlacement();
         }
         else if (player != null)
         {
-            // альтернатива через игрока
+            //альтернатива через игрока
             player.EnableShipPlacement();
         }
         else
@@ -115,7 +115,7 @@ public class GameManagerBot : MonoBehaviour
         Debug.Log("=== НАЧАЛО ИГРЫ ===");
         currentPhase = BotGamePhase.PlayerTurn;
 
-        // скрываем текст расстановки
+        //скрываем текст расстановки
         if (playerSetupText != null)
         {
             playerSetupText.SetActive(false);
@@ -130,33 +130,33 @@ public class GameManagerBot : MonoBehaviour
         Debug.Log("=== ХОД ИГРОКА ===");
         Debug.Log("Двигайте корабли (WASD) и стреляйте (ЛКМ) по сетке бота");
 
-        // сбрасываем флаги действий у кораблей игрока
+        //сбрасываем флаги действий у кораблей игрока
         if (player != null)
         {
             player.ResetShipsActions();
             Debug.Log("Сброшены флаги действий у кораблей игрока");
         }
 
-        // показываем инструкцию для хода игрока
+        //показываем инструкцию для хода игрока
         if (turnInstructions != null)
         {
             turnInstructions.SetActive(true);
         }
 
-        // скрываем остальные UI
+        //скрываем остальные UI
         if (transitionInstructions != null)
         {
             transitionInstructions.SetActive(false);
         }
 
-        // 1. включаем режим движения кораблей
+        //включаем режим движения кораблей
         if (player != null)
         {
             player.EnableShipMovement();
             Debug.Log("Режим движения кораблей включен");
         }
 
-        // 2. включаем режим стрельбы ПО БОТУ
+        //включаем режим стрельбы ПО БОТУ
         if (battleGridControllerBot != null)
         {
             battleGridControllerBot.SetupForPlayerTurn(player, botPlayer, botGrid, gameCamera);
@@ -174,19 +174,19 @@ public class GameManagerBot : MonoBehaviour
 
         Debug.Log("=== ХОД БОТА ===");
 
-        // бот двигает свои корабли
+        //бот двигает свои корабли
         if (botPlayer != null)
         {
             botPlayer.EnableShipMovement(); // вызовет MoveBotShips()
         }
 
-        // показываем "Ход противника"
+        //показываем "Ход противника"
         if (transitionInstructions != null)
         {
             transitionInstructions.SetActive(true);
         }
 
-        // скрываем инструкцию для игрока
+        //скрываем инструкцию для игрока
         if (turnInstructions != null)
         {
             turnInstructions.SetActive(false);
@@ -194,7 +194,7 @@ public class GameManagerBot : MonoBehaviour
 
         isTransitioning = true;
 
-        // задержка перед ходом бота
+        //задержка перед ходом бота
         Invoke("ExecuteBotTurn", 1f);
     }
 
@@ -206,11 +206,11 @@ public class GameManagerBot : MonoBehaviour
 
         playerGrid.AddShot(botShot);
 
-        // обработка результата
+        //обработка результата
         botPlayer.ProcessShotResult(botShot, hit);
         Debug.Log(hit ? "Бот попал!" : "Бот промахнулся!");
 
-        // проверить конец игры
+        //проверить конец игры
         if (player.AllShipsSunk())
         {
             EndGame(false);
@@ -224,7 +224,7 @@ public class GameManagerBot : MonoBehaviour
             }
             else
             {
-                playerGrid.NextTurn(); // сбрасываем выстрелы этого хода
+                playerGrid.NextTurn(); //сбрасываем выстрелы этого хода
                 Invoke("SwitchToPlayerTurn", 1.5f);
             }
         }
@@ -238,29 +238,29 @@ public class GameManagerBot : MonoBehaviour
 
         if (botPlayer.AllShipsSunk())
         {
-            EndGame(true); // игрок выиграл
+            EndGame(true); //игрок выиграл
             return;
         }
 
-        // если игрок попал - продолжает ходить (двигать корабли и стрелять)
+        //если игрок попал - продолжает ходить (двигать корабли и стрелять)
         if (hit)
         {
             Debug.Log("Игрок попал - продолжает ход");
-            // оставляем включенными оба режима
+            //оставляем включенными оба режима
         }
         else
         {
-            // если промахнулся - отключаем управление игроку, ход бота
+            //если промахнулся - отключаем управление игроку, ход бота
             Debug.Log("Промах - ход переходит боту");
 
-            // отключаем управление игроку
+            //отключаем управление игроку
             player.DisableShipMovement();
             if (battleGridControllerBot != null)
             {
                 battleGridControllerBot.DisableController();
             }
 
-            // включаем ход бота
+            //включаем ход бота
             currentPhase = BotGamePhase.BotTurn;
             EnableBotTurn();
         }
@@ -276,29 +276,29 @@ public class GameManagerBot : MonoBehaviour
             transitionInstructions.SetActive(false);
         }
 
-        // сбрасываем флаги действий у кораблей игрока
+        //сбрасываем флаги действий у кораблей игрока
         if (player != null)
         {
             player.ResetShipsActions();
             Debug.Log("Сброшены флаги действий у кораблей игрока (при переключении хода)");
         }
 
-        EnablePlayerTurn(); // включаем движение и стрельбу
+        EnablePlayerTurn(); //включаем движение и стрельбу
     }
 
     void EndGame(bool playerWon)
     {
         currentPhase = BotGamePhase.GameOver;
 
-        // скрываем все UI кроме victoryText
+        //скрываем все UI кроме victoryText
         HideAllUI();
 
-        // показываем текст победы
+        //показываем текст победы
         if (victoryText != null)
         {
             victoryText.SetActive(true);
 
-            // меняем текст в зависимости от победителя
+            //меняем текст в зависимости от победителя
             Text textComponent = victoryText.GetComponent<Text>();
             if (textComponent != null)
             {
@@ -322,11 +322,11 @@ public class GameManagerBot : MonoBehaviour
             Debug.Log("Бот победил!");
         }
 
-        // показать все корабли
+        //показать все корабли
         player.ShowAllShips();
         botPlayer.ShowAllShips();
 
-        // отключить стрельбу
+        //отключить стрельбу
         if (battleGridControllerBot != null)
         {
             battleGridControllerBot.DisableController();
@@ -335,13 +335,13 @@ public class GameManagerBot : MonoBehaviour
 
     void Update()
     {
-        // обработка клавиши Escape для возврата в меню
+        //обработка клавиши Escape для возврата в меню
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             BackToMainMenu();
         }
 
-        // пробел для завершения расстановки
+        //пробел для завершения расстановки
         if (Input.GetKeyDown(KeyCode.Space) && currentPhase == BotGamePhase.PlayerSetup)
         {
             if (player.AllShipsPlaced())
@@ -355,7 +355,7 @@ public class GameManagerBot : MonoBehaviour
             }
         }
 
-        // перезапуск сцены в фазе GameOver
+        //перезапуск сцены в фазе GameOver
         if (currentPhase == BotGamePhase.GameOver && Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -369,7 +369,7 @@ public class GameManagerBot : MonoBehaviour
     }
 
 
-    // методы для работы с UI
+    //методы для работы с UI
     void ShowShotMessage(bool hit)
     {
         if (shotStatusText == null) return;

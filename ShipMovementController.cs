@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class ShipMovementController : MonoBehaviour
 {
@@ -60,7 +61,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
-    // попробовать выбрать корабль
+    //попробовать выбрать корабль
     void TrySelectShip()
     {
         Ray ray = gameCamera.ScreenPointToRay(Input.mousePosition);
@@ -107,7 +108,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
-    // выбрать корабль
+    //выбрать корабль
     void SelectShip(Ship ship)
     {
         if (ship.isSunk || ship.health <= 0)
@@ -130,7 +131,7 @@ public class ShipMovementController : MonoBehaviour
         Debug.Log($"Выбран корабль: {ship.shipName}, направление: {ship.GetDirectionName()}");
     }
 
-    // снять выделение с корабля
+    //снять выделение с корабля
     void DeselectShip()
     {
         if (selectedShip != null)
@@ -149,7 +150,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
-    // подсветить клетки корабля определенным цветом
+    //подсветить клетки корабля определенным цветом
     void HighlightShipCells(Ship ship, Color color)
     {
         List<Vector2Int> cells = ship.GetAllCells();
@@ -159,7 +160,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
-    // убрать подсветку с последних подсвеченных клеток
+    //убрать подсветку с последних подсвеченных клеток
     void ClearLastHighlightedCells()
     {
         foreach (Vector2Int cell in lastHighlightedCells)
@@ -168,7 +169,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
-    // обновить подсветку всех кораблей
+    //обновить подсветку всех кораблей
     void UpdateAllShipsHighlight()
     {
         gridManager.ResetAllHighlights();
@@ -189,80 +190,93 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
-    // двинуть выбранный корабль вперед
+    //0 - вперед, 1 - назад, 2 - влево, 3 - вправо
+    void UniversMove(int k)
+    {
+        if (selectedShip == null) return;
+
+        List<Ship> playerShips = GetCurrentPlayerShips();
+
+        switch (k)
+        {
+            case 0: //вперёд
+                bool moved_w = selectedShip.MoveForward(gridManager, playerShips);
+
+                if (moved_w)
+                {
+                    UpdateAllShipsHighlight();
+                    Debug.Log($"{selectedShip.shipName} сдвинут назад");
+                }
+                else
+                {
+                    Debug.Log($"Нельзя сдвинуть {selectedShip.shipName} назад");
+                }
+                break;
+            case 1:
+                bool moved_s = selectedShip.MoveBackward(gridManager, playerShips);
+
+                if (moved_s)
+                {
+                    UpdateAllShipsHighlight();
+                    Debug.Log($"{selectedShip.shipName} сдвинут вперед");
+                }
+                else
+                {
+                    Debug.Log($"Нельзя сдвинуть {selectedShip.shipName} вперед");
+                }
+                break;
+            case 2://влево
+                bool rotated_a = selectedShip.RotateLeft(gridManager, playerShips);
+
+                if (rotated_a)
+                {
+                    UpdateAllShipsHighlight();
+                    Debug.Log($"{selectedShip.shipName} повернут налево");
+                }
+                else
+                {
+                    Debug.Log($"Нельзя повернуть {selectedShip.shipName} налево");
+                }
+                break;
+            case 3:
+                bool rotated_d = selectedShip.RotateRight(gridManager, playerShips);
+
+                if (rotated_d)
+                {
+                    UpdateAllShipsHighlight();
+                    Debug.Log($"{selectedShip.shipName} повернут направо");
+                }
+                else
+                {
+                    Debug.Log($"Нельзя повернуть {selectedShip.shipName} направо");
+                }
+                break;
+        }
+    }
+
+
+    //двинуть выбранный корабль вперед
     void MoveSelectedShipForward()
     {
-        if (selectedShip == null) return;
-
-        List<Ship> playerShips = GetCurrentPlayerShips();
-        bool moved = selectedShip.MoveForward(gridManager, playerShips);
-
-        if (moved)
-        {
-            UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} сдвинут назад");
-        }
-        else
-        {
-            Debug.Log($"Нельзя сдвинуть {selectedShip.shipName} назад");
-        }
+        UniversMove(0);
     }
 
-    // двинуть выбранный корабль назад
+    //двинуть выбранный корабль назад
     void MoveSelectedShipBackward()
     {
-        if (selectedShip == null) return;
-
-        List<Ship> playerShips = GetCurrentPlayerShips();
-        bool moved = selectedShip.MoveBackward(gridManager, playerShips);
-
-        if (moved)
-        {
-            UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} сдвинут вперед");
-        }
-        else
-        {
-            Debug.Log($"Нельзя сдвинуть {selectedShip.shipName} вперед");
-        }
+        UniversMove(1);
     }
 
-    // повернуть выбранный корабль налево
+    //повернуть выбранный корабль налево
     void RotateSelectedShipLeft()
     {
-        if (selectedShip == null) return;
-
-        List<Ship> playerShips = GetCurrentPlayerShips();
-        bool rotated = selectedShip.RotateLeft(gridManager, playerShips);
-
-        if (rotated)
-        {
-            UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} повернут налево");
-        }
-        else
-        {
-            Debug.Log($"Нельзя повернуть {selectedShip.shipName} налево");
-        }
+        UniversMove(2);
     }
 
-    // повернуть выбранный корабль направо
+    //повернуть выбранный корабль направо
     void RotateSelectedShipRight()
     {
-        if (selectedShip == null) return;
-
-        List<Ship> playerShips = GetCurrentPlayerShips();
-        bool rotated = selectedShip.RotateRight(gridManager, playerShips);
-
-        if (rotated)
-        {
-            UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} повернут направо");
-        }
-        else
-        {
-            Debug.Log($"Нельзя повернуть {selectedShip.shipName} направо");
-        }
+        UniversMove(3);
     }
 
     // получить корабли текущего игрока
@@ -271,7 +285,7 @@ public class ShipMovementController : MonoBehaviour
         return allShips.Where(s => s.owner == currentPlayer).ToList();
     }
 
-    // включить режим перемещения
+    //включить режим перемещения
     public void EnableMovementMode(List<Ship> ships, Player player)
     {
         allShips = ships;
@@ -288,7 +302,7 @@ public class ShipMovementController : MonoBehaviour
     }
 
 
-    // отключить режим перемещения
+    //отключить режим перемещения
     public void DisableMovementMode()
     {
         movementModeActive = false;

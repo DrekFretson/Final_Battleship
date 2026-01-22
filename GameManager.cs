@@ -6,12 +6,12 @@ using UnityEngine.SceneManagement;
 
 public enum GamePhase
 {
-    Player1Setup,
-    Player2Setup,
-    Player1Turn,
-    Player2Turn,
-    TransitionPhase,
-    GameOver
+    Player1Setup,    // Игрок 1 расставляет свои корабли
+    Player2Setup,    // Игрок 2 расставляет свои корабли  
+    Player1Turn,     // Активный ход игрока 1
+    Player2Turn,     // Активный ход игрока 2
+    TransitionPhase, // Пауза между фазами
+    GameOver         // Игра завершена, есть победитель
 }
 
 public class GameManager : MonoBehaviour
@@ -34,28 +34,28 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject transitionInstructions;
     [SerializeField] private GameObject shotStatusText;
     [SerializeField] private GameObject victoryScreen;
-    [SerializeField] private GameObject victoryText; // НОВЫЙ: текст победы
-    [SerializeField] private GameObject player1SetupText; // НОВЫЙ: текст для игрока 1
-    [SerializeField] private GameObject player2SetupText; // НОВЫЙ: текст для игрока 2
+    [SerializeField] private GameObject victoryText; // текст победы
+    [SerializeField] private GameObject player1SetupText; // текст для игрока 1
+    [SerializeField] private GameObject player2SetupText; // текст для игрока 2
 
     [Header("Контроллер боя")]
-    [SerializeField] private BattleGridController battleGridController;
+    [SerializeField] private BattleGridController battleGridController; //Контроллер боя, выключен во время расстоновки 
 
     [Header("Настройки игры")]
     [SerializeField] private float endGameDelay = 3f;
 
-    private GamePhase currentPhase = GamePhase.Player1Setup;
+    private GamePhase currentPhase = GamePhase.Player1Setup; //Фаза игры, начинаем всегда с 1-ого игорька
     private Player currentPlayer;
     private Player opponentPlayer;
     private GridManager currentGrid;
     private Camera currentCamera;
-    private bool isTransitioning = false;
+    private bool isTransitioning = false; //Флаг перехода, когда true - игра ждет пробела
     private bool canRestart = false;
     private Coroutine messageCoroutine;
 
     void Start()
     {
-        // находим BattleGridController если не назначен
+       
         if (battleGridController == null)
         {
             battleGridController = FindObjectOfType<BattleGridController>();
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
 
         canRestart = false;
     }
-
+    //Фаза расстановки кораблей 
     void StartSetupPhase()
     {
         Debug.Log($"=== StartSetupPhase: {currentPhase} ===");
@@ -108,7 +108,7 @@ public class GameManager : MonoBehaviour
         if (player1SetupText != null) player1SetupText.SetActive(false);
         if (player2SetupText != null) player2SetupText.SetActive(false);
         if (setupInstructions != null) setupInstructions.SetActive(false);
-
+        //Меняем игроьков, чтобы он расставили корабли
         switch (currentPhase)
         {
             case GamePhase.Player1Setup:
@@ -455,7 +455,7 @@ public class GameManager : MonoBehaviour
 
     void CheckSunkShips()
     {
-        // Просто логируем
+       
         foreach (Ship ship in player1.GetComponentsInChildren<Ship>())
         {
             if (ship.isSunk)
@@ -650,3 +650,4 @@ public class GameManager : MonoBehaviour
         if (cam != null) cam.gameObject.SetActive(true);
     }
 }
+

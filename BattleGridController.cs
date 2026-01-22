@@ -10,12 +10,12 @@ public class BattleGridController : MonoBehaviour
     [Header("Настройки стрельбы")]
     [SerializeField] private float shotCooldown = 0.5f;
 
-    private Player currentPlayer; //Владелец контроллера 
-    private Player opponentPlayer; //Игрок, по полю которого стреляем
+    private Player currentPlayer; //владелец контроллера 
+    private Player opponentPlayer; //игрок, по полю которого стреляем
     private GameManager gameManager;
 
-    private Vector2Int hoveredCell = new Vector2Int(-1, -1); //Клетка, над которой курсор
-    private Color hoverColor = new Color(1, 1, 0, 0.5f); // Эту клетку подсвечиввваем 
+    private Vector2Int hoveredCell = new Vector2Int(-1, -1); //клетка, над которой курсор
+    private Color hoverColor = new Color(1, 1, 0, 0.5f); //эту клетку подсвечиввваем 
 
     private bool canShoot = true;
     private Coroutine cooldownCoroutine;
@@ -49,7 +49,7 @@ public class BattleGridController : MonoBehaviour
         Debug.Log($"BattleGridController настроен для {player.playerName}");
     }
 
-    public void DisableController() //Диактивация контроллера до конца хода
+    public void DisableController() //диактивация контроллера до конца хода
     {
         enabled = false;
         currentPlayer = null;
@@ -106,20 +106,20 @@ public class BattleGridController : MonoBehaviour
 
                 Vector2Int cell = new Vector2Int(gridX, gridY);
 
-                // Если перешли на новую клетку
+                //если перешли на новую клетку
                 if (hoveredCell.x != gridX || hoveredCell.y != gridY)
                 {
-                    // Восстанавливаем предыдущую клетку
+                    //восстанавливаем предыдущую клетку
                     if (hoveredCell.x >= 0 && hoveredCell.y >= 0)
                     {
                         battleGrid.RestoreCellToBaseState(hoveredCell.x, hoveredCell.y);
                     }
 
-                    // Проверяем, можно ли стрелять в эту клетку
+                    //проверяем, можно ли стрелять в эту клетку
                     if (!battleGrid.WasShotThisTurn(cell))
                     {
                         hoveredCell = cell;
-                        // Подсвечиваем только если не была выстрелена
+                        //подсвечиваем только если не была выстрелена
                         if (!battleGrid.WasShot(cell))
                         {
                             battleGrid.HighlightCellColor(gridX, gridY, hoverColor);
@@ -127,14 +127,14 @@ public class BattleGridController : MonoBehaviour
                     }
                     else
                     {
-                        // Клетка уже была выстрелена в этом ходу
+                        //клетка уже была выстрелена в этом ходу
                         hoveredCell = new Vector2Int(-1, -1);
                     }
                 }
             }
         }
 
-        // Если не нашли клетку, восстанавливаем подсветку
+        //если не нашли клетку, восстанавливаем подсветку
         if (!foundCell && hoveredCell.x >= 0 && hoveredCell.y >= 0)
         {
             battleGrid.RestoreCellToBaseState(hoveredCell.x, hoveredCell.y);
@@ -160,16 +160,16 @@ public class BattleGridController : MonoBehaviour
     {
         canShoot = false;
 
-        // Сообщаем клетке, что по ней выстрелили
+        //сообщаем клетке, что по ней выстрелили
         battleGrid.AddShot(targetCell);
 
         bool hit = opponentPlayer.TakeHit(targetCell); //Передаем оппоненту координаты клетки и он проверяет, есть ли корабль
-        //Регистрирует поподание и т.д.
+        //регистрирует поподание и т.д.
         Debug.Log($"Выстрел по [{targetCell.x}, {targetCell.y}]: {(hit ? "ПОПАДАНИЕ" : "ПРОМАХ")}");
 
         hoveredCell = new Vector2Int(-1, -1);
 
-        // Сообщаем GameManager
+        //сообщаем GameManager
         if (gameManager != null)
         {
             gameManager.ProcessBattleShot(hit);
@@ -189,7 +189,7 @@ public class BattleGridController : MonoBehaviour
             Debug.LogError("GameManager не найден!");
         }
     }
-    //Корутина(функция с возможностью отсоновки) для кулдауна
+    //корутина(функция с возможностью отсоновки) для кулдауна
     IEnumerator StartShotCooldown(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -198,4 +198,3 @@ public class BattleGridController : MonoBehaviour
         Debug.Log("Стрельба разрешена");
     }
 }
-

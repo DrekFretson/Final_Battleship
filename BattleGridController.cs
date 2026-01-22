@@ -10,12 +10,12 @@ public class BattleGridController : MonoBehaviour
     [Header("Настройки стрельбы")]
     [SerializeField] private float shotCooldown = 0.5f;
 
-    private Player currentPlayer;
-    private Player opponentPlayer;
+    private Player currentPlayer; //Владелец контроллера 
+    private Player opponentPlayer; //Игрок, по полю которого стреляем
     private GameManager gameManager;
 
-    private Vector2Int hoveredCell = new Vector2Int(-1, -1);
-    private Color hoverColor = new Color(1, 1, 0, 0.5f);
+    private Vector2Int hoveredCell = new Vector2Int(-1, -1); //Клетка, над которой курсор
+    private Color hoverColor = new Color(1, 1, 0, 0.5f); // Эту клетку подсвечиввваем 
 
     private bool canShoot = true;
     private Coroutine cooldownCoroutine;
@@ -49,7 +49,7 @@ public class BattleGridController : MonoBehaviour
         Debug.Log($"BattleGridController настроен для {player.playerName}");
     }
 
-    public void DisableController()
+    public void DisableController() //Диактивация контроллера до конца хода
     {
         enabled = false;
         currentPlayer = null;
@@ -160,10 +160,11 @@ public class BattleGridController : MonoBehaviour
     {
         canShoot = false;
 
-        // Отмечаем выстрел
+        // Сообщаем клетке, что по ней выстрелили
         battleGrid.AddShot(targetCell);
 
-        bool hit = opponentPlayer.TakeHit(targetCell);
+        bool hit = opponentPlayer.TakeHit(targetCell); //Передаем оппоненту координаты клетки и он проверяет, есть ли корабль
+        //Регистрирует поподание и т.д.
         Debug.Log($"Выстрел по [{targetCell.x}, {targetCell.y}]: {(hit ? "ПОПАДАНИЕ" : "ПРОМАХ")}");
 
         hoveredCell = new Vector2Int(-1, -1);
@@ -188,7 +189,7 @@ public class BattleGridController : MonoBehaviour
             Debug.LogError("GameManager не найден!");
         }
     }
-
+    //Корутина(функция с возможностью отсоновки) для кулдауна
     IEnumerator StartShotCooldown(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -197,3 +198,4 @@ public class BattleGridController : MonoBehaviour
         Debug.Log("Стрельба разрешена");
     }
 }
+

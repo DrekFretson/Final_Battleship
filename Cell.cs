@@ -7,7 +7,7 @@ public class Cell : MonoBehaviour
 
     void Start()
     {
-        // гарантируем наличие коллайдера
+        //гарантируем наличие коллайдера
         if (GetComponent<Collider>() == null)
         {
             gameObject.AddComponent<BoxCollider>();

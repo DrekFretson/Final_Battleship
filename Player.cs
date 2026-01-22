@@ -172,7 +172,7 @@ public class Player : MonoBehaviour
     }
 
 
-    // показать ВСЕ потопленные корабли этого игрока
+    // показать потопленные корабли этого игрока
     public void RevealAllSunkShips()
     {
         int sunkCount = 0;
@@ -210,3 +210,4 @@ public class Player : MonoBehaviour
         return playerGrid;
     }
 }
+

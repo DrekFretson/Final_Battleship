@@ -131,7 +131,7 @@ public class GridManager : MonoBehaviour
             borderMaterial);
     }
 
-    // ИЗМЕНИЛИ ПАРАМЕТР МЕТОДА: Color color - Material material
+   
     void CreateBorderPiece(GameObject parent, string name, Vector3 position, Vector3 scale, Material material)
     {
         GameObject borderPiece = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -250,7 +250,7 @@ public class GridManager : MonoBehaviour
 
         Vector2Int key = new Vector2Int(x, y);
 
-        // Отладочная информация
+        //отладка
         bool isCurrent = currentTurnShots.Contains(key);
         bool isPrevious = previousTurnShots.Contains(key);
 
@@ -290,14 +290,14 @@ public class GridManager : MonoBehaviour
     {
         Debug.Log($"=== AddShot [{cell.x},{cell.y}] ===");
 
-        // 1. СНАЧАЛА добавляем в currentTurnShots
+        // 1.  добавляем в currentTurnShots
         if (!currentTurnShots.Contains(cell))
         {
             currentTurnShots.Add(cell);
             Debug.Log($"  Добавлен в currentTurnShots");
         }
 
-        // 2. Устанавливаем цвет СРАЗУ
+        // 2. Устанавливаем цвет 
         Cell cellObj = GetCell(cell.x, cell.y);
         if (cellObj != null)
         {
@@ -309,7 +309,7 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // 3. ПОТОМ удаляем из previousTurnShots (если там есть)
+        // 3. удаляем из previousTurnShots (если там есть)
         if (previousTurnShots.Contains(cell))
         {
             previousTurnShots.Remove(cell);
@@ -398,3 +398,4 @@ public class GridManager : MonoBehaviour
         }
     }
 }
+

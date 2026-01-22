@@ -186,7 +186,7 @@ public class BattleGridControllerBot : MonoBehaviour
             else
             {
                 Debug.Log("Промах - вызываем NextTurn()");
-                battleGrid.NextTurn(); // ЭТО ВАЖНО!
+                battleGrid.NextTurn();
 
                 //после NextTurn() нужно обновить подсветку ВСЕЙ сетки
                 StartCoroutine(RefreshGridAfterTurn());

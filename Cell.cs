@@ -7,6 +7,7 @@ public class Cell : MonoBehaviour
 
     void Start()
     {
+        // гарантируем наличие коллайдера
         if (GetComponent<Collider>() == null)
         {
             gameObject.AddComponent<BoxCollider>();
@@ -27,7 +28,6 @@ public class Cell : MonoBehaviour
 
     void OnMouseDown()
     {
-        Debug.Log($"Êëèê ïî êëåòêå: ({x}, {y})");
+        Debug.Log($"Клик по клетке: ({x}, {y})");
     }
-
 }

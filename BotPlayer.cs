@@ -10,10 +10,10 @@ public class BotPlayer : Player
     private Vector2Int lastHit = new Vector2Int(-1, -1);
     private bool isHuntingMode = false;
 
-    // для движения кораблей бота
+    //для движения кораблей бота
     private List<Ship> shipsThatCanMove = new List<Ship>();
 
-    // для хранения запрещённых клеток
+    //для хранения запрещённых клеток
     private List<Vector2Int> forbiddenCells = new List<Vector2Int>();
 
     public new void Initialize(string name, GridManager grid)
@@ -30,7 +30,7 @@ public class BotPlayer : Player
             return;
         }
 
-        // Генерация всех возможных выстрелов
+        //генерация всех возможных выстрелов
         int gridSize = battleGrid.GetGridSize();
         for (int x = 0; x < gridSize; x++)
         {
@@ -43,7 +43,7 @@ public class BotPlayer : Player
         ShuffleShots();
     }
 
-    // метод для случайной расстановки кораблей
+    //метод для случайной расстановки кораблей
     public void RandomPlaceShips()
     {
         foreach (Ship ship in ships)
@@ -76,10 +76,10 @@ public class BotPlayer : Player
         Debug.LogError($"Не удалось разместить {ship.shipName} после {maxAttempts} попыток");
     }
 
-    // логика выстрела бота
+    //логика выстрела бота
     public Vector2Int MakeShot(Player opponentPlayer)
     {
-        // обновляем запрещённые клетки перед выстрелом
+        //обновляем запрещённые клетки перед выстрелом
         UpdateForbiddenCells(opponentPlayer);
 
         Vector2Int target;
@@ -93,14 +93,14 @@ public class BotPlayer : Player
             target = GetRandomShot();
         }
 
-        // если выбранная клетка запрещена - пробуем найти другую
+        //если выбранная клетка запрещена - пробуем найти другую
         if (forbiddenCells.Contains(target))
         {
             Debug.LogWarning($"Бот: выбранная клетка [{target.x},{target.y}] запрещена, ищу другую");
             target = FindValidShot();
         }
 
-        // удаляем выстрел из доступных
+        //удаляем выстрел из доступных
         if (availableShots.Contains(target))
         {
             availableShots.Remove(target);
@@ -109,7 +109,7 @@ public class BotPlayer : Player
         return target;
     }
 
-    // найти допустимый выстрел
+    //найти допустимый выстрел
     Vector2Int FindValidShot()
     {
         List<Vector2Int> validShots = new List<Vector2Int>();
@@ -199,7 +199,7 @@ public class BotPlayer : Player
         }
     }
 
-    // обновить запрещённые клетки
+    //обновить запрещённые клетки
     void UpdateForbiddenCells(Player opponentPlayer)
     {
         forbiddenCells.Clear();
@@ -221,7 +221,7 @@ public class BotPlayer : Player
         Debug.Log($"Бот: обновлены запрещённые клетки. Всего: {forbiddenCells.Count}");
     }
 
-    // пометить клетки вокруг потопленного корабля как запрещённые
+    //пометить клетки вокруг потопленного корабля как запрещённые
     void MarkForbiddenCellsAroundShip(Ship ship)
     {
         if (ship == null) return;
@@ -266,7 +266,7 @@ public class BotPlayer : Player
         }
     }
 
-    // переопределяем методы
+    //переопределяем методы
     public override void EnableShipPlacement()
     {
         RandomPlaceShips();
@@ -286,7 +286,7 @@ public class BotPlayer : Player
         }
     }
 
-    // бот двигает свои корабли
+    //бот двигает свои корабли
     public void MoveBotShips()
     {
         shipsThatCanMove.Clear();
@@ -304,7 +304,7 @@ public class BotPlayer : Player
 
         foreach (Ship ship in shipsThatCanMove)
         {
-            // 80% шанс что корабль попробует двигаться
+            //80% шанс что корабль попробует двигаться
             if (Random.Range(0, 100) < 80 && !ship.hasActedThisTurn)
             {
                 TryMoveShip(ship);
@@ -321,21 +321,21 @@ public class BotPlayer : Player
 
         List<Ship> otherShips = ships.Where(s => s != ship && s.isPlaced && s.owner == this).ToList();
 
-        // Выделяем корабль перед движением
+        //выделяем корабль перед движением
         ship.SetSelected(true);
         ship.isSelected = true;
 
-        // сбрасываем флаг действия
+        //сбрасываем флаг действия
         ship.hasActedThisTurn = false;
 
-        // 0 движение, 1 поворот
+        //0 движение, 1 поворот
         bool shouldMove = Random.Range(0, 2) == 0;
 
         bool moved = false;
 
         if (shouldMove)
         {
-            // 0 вперёд, 1 назад
+            //0 вперёд, 1 назад
             bool moveForward = Random.Range(0, 2) == 0;
 
             if (moveForward)
@@ -349,7 +349,7 @@ public class BotPlayer : Player
         }
         else
         {
-            // 0 влево, 1 вправо
+            //0 влево, 1 вправо
             bool rotateLeft = Random.Range(0, 2) == 0;
 
             if (rotateLeft)

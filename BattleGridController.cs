@@ -3,11 +3,11 @@ using System.Collections;
 
 public class BattleGridController : MonoBehaviour
 {
-    [Header("Ññûëêè")]
+    [Header("Ссылки")]
     [SerializeField] private GridManager battleGrid;
     [SerializeField] private Camera battleCamera;
 
-    [Header("Íàñòðîéêè ñòðåëüáû")]
+    [Header("Настройки стрельбы")]
     [SerializeField] private float shotCooldown = 0.5f;
 
     private Player currentPlayer;
@@ -25,7 +25,7 @@ public class BattleGridController : MonoBehaviour
         gameManager = FindObjectOfType<GameManager>();
         if (gameManager == null)
         {
-            Debug.LogError("BattleGridController: GameManager íå íàéäåí!");
+            Debug.LogError("BattleGridController: GameManager не найден!");
         }
 
         enabled = false;
@@ -46,7 +46,7 @@ public class BattleGridController : MonoBehaviour
         }
 
         enabled = true;
-        Debug.Log($"BattleGridController íàñòðîåí äëÿ {player.playerName}");
+        Debug.Log($"BattleGridController настроен для {player.playerName}");
     }
 
     public void DisableController()
@@ -106,16 +106,20 @@ public class BattleGridController : MonoBehaviour
 
                 Vector2Int cell = new Vector2Int(gridX, gridY);
 
+                // Если перешли на новую клетку
                 if (hoveredCell.x != gridX || hoveredCell.y != gridY)
                 {
+                    // Восстанавливаем предыдущую клетку
                     if (hoveredCell.x >= 0 && hoveredCell.y >= 0)
                     {
                         battleGrid.RestoreCellToBaseState(hoveredCell.x, hoveredCell.y);
                     }
 
+                    // Проверяем, можно ли стрелять в эту клетку
                     if (!battleGrid.WasShotThisTurn(cell))
                     {
                         hoveredCell = cell;
+                        // Подсвечиваем только если не была выстрелена
                         if (!battleGrid.WasShot(cell))
                         {
                             battleGrid.HighlightCellColor(gridX, gridY, hoverColor);
@@ -123,12 +127,14 @@ public class BattleGridController : MonoBehaviour
                     }
                     else
                     {
+                        // Клетка уже была выстрелена в этом ходу
                         hoveredCell = new Vector2Int(-1, -1);
                     }
                 }
             }
         }
 
+        // Если не нашли клетку, восстанавливаем подсветку
         if (!foundCell && hoveredCell.x >= 0 && hoveredCell.y >= 0)
         {
             battleGrid.RestoreCellToBaseState(hoveredCell.x, hoveredCell.y);
@@ -142,7 +148,7 @@ public class BattleGridController : MonoBehaviour
         {
             if (battleGrid.WasShotThisTurn(hoveredCell))
             {
-                Debug.Log($"Óæå ñòðåëÿëè â [{hoveredCell.x}, {hoveredCell.y}] â ýòîì õîäó!");
+                Debug.Log($"Уже стреляли в [{hoveredCell.x}, {hoveredCell.y}] в этом ходу!");
                 return;
             }
 
@@ -154,13 +160,15 @@ public class BattleGridController : MonoBehaviour
     {
         canShoot = false;
 
+        // Отмечаем выстрел
         battleGrid.AddShot(targetCell);
 
         bool hit = opponentPlayer.TakeHit(targetCell);
-        Debug.Log($"Âûñòðåë ïî [{targetCell.x}, {targetCell.y}]: {(hit ? "ÏÎÏÀÄÀÍÈÅ" : "ÏÐÎÌÀÕ")}");
+        Debug.Log($"Выстрел по [{targetCell.x}, {targetCell.y}]: {(hit ? "ПОПАДАНИЕ" : "ПРОМАХ")}");
 
         hoveredCell = new Vector2Int(-1, -1);
 
+        // Сообщаем GameManager
         if (gameManager != null)
         {
             gameManager.ProcessBattleShot(hit);
@@ -171,13 +179,13 @@ public class BattleGridController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Ïðîìàõ - âûçûâàåì NextTurn()");
+                Debug.Log("Промах - вызываем NextTurn()");
                 battleGrid.NextTurn();
             }
         }
         else
         {
-            Debug.LogError("GameManager íå íàéäåí!");
+            Debug.LogError("GameManager не найден!");
         }
     }
 
@@ -186,7 +194,6 @@ public class BattleGridController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         canShoot = true;
         cooldownCoroutine = null;
-        Debug.Log("Ñòðåëüáà ðàçðåøåíà");
+        Debug.Log("Стрельба разрешена");
     }
-
 }

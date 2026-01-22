@@ -45,7 +45,7 @@ public class BattleGridControllerBot : MonoBehaviour
             cooldownCoroutine = null;
         }
 
-        // сбрасываем подсветку при начале хода
+        //сбрасываем подсветку при начале хода
         if (battleGrid != null)
         {
             battleGrid.ResetAllHighlights();
@@ -112,20 +112,20 @@ public class BattleGridControllerBot : MonoBehaviour
 
                 Vector2Int cell = new Vector2Int(gridX, gridY);
 
-                // если перешли на новую клетку
+                //если перешли на новую клетку
                 if (hoveredCell.x != gridX || hoveredCell.y != gridY)
                 {
-                    // восстанавливаем предыдущую клетку
+                    //восстанавливаем предыдущую клетку
                     if (hoveredCell.x >= 0 && hoveredCell.y >= 0)
                     {
                         battleGrid.RestoreCellToBaseState(hoveredCell.x, hoveredCell.y);
                     }
 
-                    // проверяем, можно ли стрелять в эту клетку
+                    //проверяем, можно ли стрелять в эту клетку
                     if (!battleGrid.WasShotThisTurn(cell))
                     {
                         hoveredCell = cell;
-                        // подсвечиваем только если не была выстрелена вообще
+                        //подсвечиваем только если не была выстрелена вообще
                         if (!battleGrid.WasShot(cell))
                         {
                             battleGrid.HighlightCellColor(gridX, gridY, hoverColor);
@@ -133,14 +133,14 @@ public class BattleGridControllerBot : MonoBehaviour
                     }
                     else
                     {
-                        // клетка уже была выстрелена в этом ходу
+                        //клетка уже была выстрелена в этом ходу
                         hoveredCell = new Vector2Int(-1, -1);
                     }
                 }
             }
         }
 
-        // если не нашли клетку, восстанавливаем подсветку
+        //если не нашли клетку, восстанавливаем подсветку
         if (!foundCell && hoveredCell.x >= 0 && hoveredCell.y >= 0)
         {
             battleGrid.RestoreCellToBaseState(hoveredCell.x, hoveredCell.y);
@@ -166,7 +166,7 @@ public class BattleGridControllerBot : MonoBehaviour
     {
         canShoot = false;
 
-        // отмечаем выстрел
+        //отмечаем выстрел
         battleGrid.AddShot(targetCell);
 
         bool hit = opponentBot.TakeHit(targetCell);
@@ -174,7 +174,7 @@ public class BattleGridControllerBot : MonoBehaviour
 
         hoveredCell = new Vector2Int(-1, -1);
 
-        // сообщаем GameManagerBot
+        //сообщаем GameManagerBot
         if (gameManagerBot != null)
         {
             gameManagerBot.ProcessPlayerShot(hit);
@@ -188,7 +188,7 @@ public class BattleGridControllerBot : MonoBehaviour
                 Debug.Log("Промах - вызываем NextTurn()");
                 battleGrid.NextTurn(); // ЭТО ВАЖНО!
 
-                // после NextTurn() нужно обновить подсветку ВСЕЙ сетки
+                //после NextTurn() нужно обновить подсветку ВСЕЙ сетки
                 StartCoroutine(RefreshGridAfterTurn());
             }
         }
@@ -198,15 +198,15 @@ public class BattleGridControllerBot : MonoBehaviour
         }
     }
 
-    // обновить подсветку сетки после смены хода
+    //обновить подсветку сетки после смены хода
     IEnumerator RefreshGridAfterTurn()
     {
-        // ждём один кадр чтобы GridManager обновил цвета
+        //ждём один кадр чтобы GridManager обновил цвета
         yield return null;
 
         if (battleGrid != null)
         {
-            // обновляем все клетки на сетке
+            //обновляем все клетки на сетке
             for (int x = 0; x < battleGrid.GetGridSize(); x++)
             {
                 for (int y = 0; y < battleGrid.GetGridSize(); y++)

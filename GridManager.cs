@@ -28,7 +28,7 @@ public class GridManager : MonoBehaviour
     private Cell[,] gridCells;
     private GameObject gridParent;
 
-    // Система отслеживания выстрелов
+    //система отслеживания выстрелов
     private List<Vector2Int> currentTurnShots = new List<Vector2Int>();
     private List<Vector2Int> previousTurnShots = new List<Vector2Int>();
 
@@ -79,7 +79,7 @@ public class GridManager : MonoBehaviour
 
                 cellGO.name = $"Cell_{x}_{y}";
 
-                // Настройка цвета с созданием Material Instance
+                //настройка цвета с созданием Material Instance
                 SetupCellColor(cellGO, x, y);
             }
         }
@@ -90,7 +90,7 @@ public class GridManager : MonoBehaviour
         Renderer renderer = cellGO.GetComponent<Renderer>();
         if (renderer != null)
         {
-            // материалл для каждой клетки
+            //материалл для каждой клетки
             renderer.material = new Material(renderer.material);
 
             bool isDark = (x + y) % 2 == 0;
@@ -131,7 +131,7 @@ public class GridManager : MonoBehaviour
             borderMaterial);
     }
 
-   
+
     void CreateBorderPiece(GameObject parent, string name, Vector3 position, Vector3 scale, Material material)
     {
         GameObject borderPiece = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -140,21 +140,21 @@ public class GridManager : MonoBehaviour
         borderPiece.transform.localPosition = position;
         borderPiece.transform.localScale = scale;
 
-        // убираем коллайдер если не нужен
+        //убираем коллайдер если не нужен
         Destroy(borderPiece.GetComponent<Collider>());
 
         Renderer renderer = borderPiece.GetComponent<Renderer>();
 
         if (material != null)
         {
-            renderer.material = material; // Просто назначаем готовый материал
+            renderer.material = material; //просто назначаем готовый материал
         }
         else
         {
-            // Fallback если материал не назначен
+            //back если материал не назначен
             Debug.LogWarning($"Material для границы не назначен! Создаем временный.");
 
-            // Создаем простой материал с коричневым цветом
+            //создаем простой материал с коричневым цветом
             Material fallbackMat = new Material(Shader.Find("Mobile/Diffuse"));
             fallbackMat.color = new Color(0.65f, 0.5f, 0.35f);
             renderer.material = fallbackMat;
@@ -185,8 +185,7 @@ public class GridManager : MonoBehaviour
         return new Vector3(x * cellSpacing, 0, y * cellSpacing);
     }
 
-    // подсветка
-
+    //подсветка
     public void HighlightCell(int x, int y, bool highlight, Color color)
     {
         Cell cell = GetCell(x, y);
@@ -197,14 +196,14 @@ public class GridManager : MonoBehaviour
 
         if (highlight)
         {
-            // Подсвечиваем
+            //подсвечиваем
             Color highlightColor = color;
             highlightColor.a = 0.7f;
             renderer.material.color = highlightColor;
         }
         else
         {
-            // Восстанавливаем базовое состояние
+            //восстанавливаем базовое состояние
             RestoreCellToBaseState(x, y);
         }
     }
@@ -284,20 +283,20 @@ public class GridManager : MonoBehaviour
         }
     }
 
-    // для выстрелов
+    //для выстрелов
 
     public void AddShot(Vector2Int cell)
     {
         Debug.Log($"=== AddShot [{cell.x},{cell.y}] ===");
 
-        // 1.  добавляем в currentTurnShots
+        //добавляем в currentTurnShots
         if (!currentTurnShots.Contains(cell))
         {
             currentTurnShots.Add(cell);
             Debug.Log($"  Добавлен в currentTurnShots");
         }
 
-        // 2. Устанавливаем цвет 
+        //устанавливаем цвет 
         Cell cellObj = GetCell(cell.x, cell.y);
         if (cellObj != null)
         {
@@ -309,7 +308,7 @@ public class GridManager : MonoBehaviour
             }
         }
 
-        // 3. удаляем из previousTurnShots (если там есть)
+        //удаляем из previousTurnShots (если там есть)
         if (previousTurnShots.Contains(cell))
         {
             previousTurnShots.Remove(cell);
@@ -337,18 +336,18 @@ public class GridManager : MonoBehaviour
         Debug.Log("=== НАЧАЛО NextTurn() ===");
         Debug.Log($"До перехода: currentTurnShots = {currentTurnShots.Count}, previousTurnShots = {previousTurnShots.Count}");
 
-        // 1. Сохраняем текущие выстрелы во временную переменную
+        //сохраняем текущие выстрелы во временную переменную
         List<Vector2Int> shotsToMove = new List<Vector2Int>(currentTurnShots);
 
-        // 2. Очищаем текущие выстрелы
+        //очищаем текущие выстрелы
         currentTurnShots.Clear();
 
-        // 3. Устанавливаем предыдущие выстрелы
+        //устанавливаем предыдущие выстрелы
         previousTurnShots = shotsToMove;
 
         Debug.Log($"После перемещения: currentTurnShots = {currentTurnShots.Count}, previousTurnShots = {previousTurnShots.Count}");
 
-        // 4. Обновляем цвет клеток, которые теперь стали "прошлыми"
+        //обновляем цвет клеток, которые теперь стали "прошлыми"
         foreach (Vector2Int cell in previousTurnShots)
         {
             Cell cellObj = GetCell(cell.x, cell.y);
@@ -398,4 +397,3 @@ public class GridManager : MonoBehaviour
         }
     }
 }
-

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 public class ShipPlacer : MonoBehaviour
 {
-    [Header("Ññûëêè")]
+    [Header("Ссылки")]
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Camera placementCamera;
     [SerializeField] private ShipMovementController shipMovementController;
     [SerializeField] private Player player;
 
-    [Header("Êîðàáëè äëÿ ðàññòàíîâêè")]
+    [Header("Корабли для расстановки")]
     [SerializeField] private List<Ship> shipsToPlace = new List<Ship>();
 
     private Ship currentlyPlacingShip;
@@ -22,63 +22,26 @@ public class ShipPlacer : MonoBehaviour
         if (gridManager == null) gridManager = FindObjectOfType<GridManager>();
         if (placementCamera == null) placementCamera = Camera.main;
         if (shipMovementController == null) shipMovementController = FindObjectOfType<ShipMovementController>();
+
+        // выключаем скрипт - ждем команды от GameManager
         enabled = false;
 
-        Debug.Log($"ShipPlacer {player.playerName} ãîòîâ, îæèäàåò êîìàíäû");
+        Debug.Log($"ShipPlacer {player.playerName} готов, ожидает команды");
     }
 
+    // метод для запуска расстановки
     public void BeginPlacement()
     {
         if (shipsToPlace.Count == 0) return;
 
-        enabled = true;
+        enabled = true; // включаем скрипт
         currentShipIndex = 0;
         BeginPlaceShip(shipsToPlace[0]);
 
-        Debug.Log($"ShipPlacer {player.playerName} íà÷àë ðàññòàíîâêó");
+        Debug.Log($"ShipPlacer {player.playerName} начал расстановку");
     }
 
 
-    public void StartShipPlacement()
-    {
-        if (player == null)
-        {
-            Debug.LogError("Player íå íàçíà÷åí!");
-            return;
-        }
-
-        enabled = true;
-        InitializeShips();
-        StartPlacing();
-
-        Debug.Log($"Íà÷àòà ðàññòàíîâêà êîðàáëåé äëÿ {player.playerName}");
-    }
-
-    public void StopShipPlacement()
-    {
-        enabled = false;
-        isPlacing = false;
-        currentlyPlacingShip = null;
-        ClearAllHighlights();
-
-        Debug.Log($"Îñòàíîâëåíà ðàññòàíîâêà êîðàáëåé äëÿ {player.playerName}");
-    }
-
-    void InitializeShips()
-    {
-        foreach (Ship ship in shipsToPlace)
-        {
-            ship.gameObject.SetActive(false);
-        }
-    }
-
-    void StartPlacing()
-    {
-        if (shipsToPlace.Count == 0) return;
-
-        currentShipIndex = 0;
-        BeginPlaceShip(shipsToPlace[0]);
-    }
 
     void BeginPlaceShip(Ship ship)
     {
@@ -93,7 +56,7 @@ public class ShipPlacer : MonoBehaviour
             gridManager.GetGridSize() / 2
         );
 
-        Debug.Log($"Ðàçìåùàåì {ship.shipName}");
+        Debug.Log($"Размещаем {ship.shipName}");
     }
 
     void Update()
@@ -167,6 +130,7 @@ public class ShipPlacer : MonoBehaviour
     {
         List<Vector2Int> newCells = currentlyPlacingShip.GetOccupiedCells();
 
+        // фильтруем корабли по владельцу
         List<Ship> placedShips = GetPlacedShips();
         List<Ship> sameOwnerPlacedShips = placedShips.FindAll(s => s.owner == this.player);
 
@@ -212,6 +176,7 @@ public class ShipPlacer : MonoBehaviour
 
     void TryPlaceCurrentShip()
     {
+        // фильтруем корабли по владельцу
         List<Ship> placedShips = GetPlacedShips();
         List<Ship> sameOwnerPlacedShips = placedShips.FindAll(s => s.owner == this.player);
 
@@ -230,11 +195,13 @@ public class ShipPlacer : MonoBehaviour
 
     void PlaceCurrentShip()
     {
+        // устанавливаем владельца ПЕРЕД размещением
         if (player != null && currentlyPlacingShip.owner == null)
         {
             currentlyPlacingShip.SetOwner(player);
         }
 
+        // фильтруем корабли по владельцу
         List<Ship> placedShips = GetPlacedShips();
         List<Ship> sameOwnerPlacedShips = placedShips.FindAll(s => s.owner == this.player);
 
@@ -268,9 +235,10 @@ public class ShipPlacer : MonoBehaviour
         isPlacing = false;
         currentlyPlacingShip = null;
 
+        // автоматически выключаемся после завершения
         enabled = false;
 
-        Debug.Log($"ShipPlacer {player.playerName} çàâåðøèë ðàññòàíîâêó");
+        Debug.Log($"ShipPlacer {player.playerName} завершил расстановку");
 
         if (shipMovementController != null && player != null)
         {
@@ -278,10 +246,11 @@ public class ShipPlacer : MonoBehaviour
         }
         else
         {
-            Debug.LogError("ShipMovementController èëè Player íå íàçíà÷åíû!");
+            Debug.LogError("ShipMovementController или Player не назначены!");
         }
     }
 
+    // метод для очистки всех подсветок
     void ClearAllHighlights()
     {
         foreach (Vector2Int cell in lastHighlightedCells)
@@ -290,5 +259,4 @@ public class ShipPlacer : MonoBehaviour
         }
         lastHighlightedCells.Clear();
     }
-
 }

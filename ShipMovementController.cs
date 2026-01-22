@@ -4,11 +4,11 @@ using System.Linq;
 
 public class ShipMovementController : MonoBehaviour
 {
-    [Header("Ńńűëęč")]
+    [Header("Ссылки")]
     [SerializeField] private GridManager gridManager;
     [SerializeField] private Camera gameCamera;
 
-    [Header("Íŕńňđîéęč öâĺňîâ")]
+    [Header("Настройки цветов")]
     [SerializeField] private Color activeShipColor = Color.blue;
     [SerializeField] private Color movedShipColor = new Color(0f, 1f, 1f);
 
@@ -60,6 +60,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
+    // попробовать выбрать корабль
     void TrySelectShip()
     {
         Ray ray = gameCamera.ScreenPointToRay(Input.mousePosition);
@@ -72,7 +73,7 @@ public class ShipMovementController : MonoBehaviour
             {
                 if (ship.isSunk || ship.health <= 0)
                 {
-                    Debug.Log($"{ship.shipName} ďîňîďëĺí, âűáîđ íĺâîçěîćĺí");
+                    Debug.Log($"{ship.shipName} потоплен, выбор невозможен");
                     return;
                 }
 
@@ -106,11 +107,12 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
+    // выбрать корабль
     void SelectShip(Ship ship)
     {
         if (ship.isSunk || ship.health <= 0)
         {
-            Debug.Log($"Íĺëüç˙ âűáđŕňü ďîňîďëĺííűé ęîđŕáëü {ship.shipName}");
+            Debug.Log($"Нельзя выбрать потопленный корабль {ship.shipName}");
             return;
         }
 
@@ -125,9 +127,10 @@ public class ShipMovementController : MonoBehaviour
         lastHighlightedCells = new List<Vector2Int>(ship.GetAllCells());
         HighlightShipCells(ship, activeShipColor);
 
-        Debug.Log($"Âűáđŕí ęîđŕáëü: {ship.shipName}, íŕďđŕâëĺíčĺ: {ship.GetDirectionName()}");
+        Debug.Log($"Выбран корабль: {ship.shipName}, направление: {ship.GetDirectionName()}");
     }
 
+    // снять выделение с корабля
     void DeselectShip()
     {
         if (selectedShip != null)
@@ -140,12 +143,13 @@ public class ShipMovementController : MonoBehaviour
                 HighlightShipCells(selectedShip, movedShipColor);
             }
 
-            Debug.Log($"Ńí˙ňî âűäĺëĺíčĺ ń ęîđŕáë˙: {selectedShip.shipName}");
+            Debug.Log($"Снято выделение с корабля: {selectedShip.shipName}");
             selectedShip = null;
             lastHighlightedCells.Clear();
         }
     }
 
+    // подсветить клетки корабля определенным цветом
     void HighlightShipCells(Ship ship, Color color)
     {
         List<Vector2Int> cells = ship.GetAllCells();
@@ -155,6 +159,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
+    // убрать подсветку с последних подсвеченных клеток
     void ClearLastHighlightedCells()
     {
         foreach (Vector2Int cell in lastHighlightedCells)
@@ -163,6 +168,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
+    // обновить подсветку всех кораблей
     void UpdateAllShipsHighlight()
     {
         gridManager.ResetAllHighlights();
@@ -183,6 +189,7 @@ public class ShipMovementController : MonoBehaviour
         }
     }
 
+    // двинуть выбранный корабль вперед
     void MoveSelectedShipForward()
     {
         if (selectedShip == null) return;
@@ -193,14 +200,15 @@ public class ShipMovementController : MonoBehaviour
         if (moved)
         {
             UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} ńäâčíóň íŕçŕä");
+            Debug.Log($"{selectedShip.shipName} сдвинут назад");
         }
         else
         {
-            Debug.Log($"Íĺëüç˙ ńäâčíóňü {selectedShip.shipName} íŕçŕä");
+            Debug.Log($"Нельзя сдвинуть {selectedShip.shipName} назад");
         }
     }
 
+    // двинуть выбранный корабль назад
     void MoveSelectedShipBackward()
     {
         if (selectedShip == null) return;
@@ -211,14 +219,15 @@ public class ShipMovementController : MonoBehaviour
         if (moved)
         {
             UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} ńäâčíóň âďĺđĺä");
+            Debug.Log($"{selectedShip.shipName} сдвинут вперед");
         }
         else
         {
-            Debug.Log($"Íĺëüç˙ ńäâčíóňü {selectedShip.shipName} âďĺđĺä");
+            Debug.Log($"Нельзя сдвинуть {selectedShip.shipName} вперед");
         }
     }
 
+    // повернуть выбранный корабль налево
     void RotateSelectedShipLeft()
     {
         if (selectedShip == null) return;
@@ -229,14 +238,15 @@ public class ShipMovementController : MonoBehaviour
         if (rotated)
         {
             UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} ďîâĺđíóň íŕëĺâî");
+            Debug.Log($"{selectedShip.shipName} повернут налево");
         }
         else
         {
-            Debug.Log($"Íĺëüç˙ ďîâĺđíóňü {selectedShip.shipName} íŕëĺâî");
+            Debug.Log($"Нельзя повернуть {selectedShip.shipName} налево");
         }
     }
 
+    // повернуть выбранный корабль направо
     void RotateSelectedShipRight()
     {
         if (selectedShip == null) return;
@@ -247,19 +257,21 @@ public class ShipMovementController : MonoBehaviour
         if (rotated)
         {
             UpdateAllShipsHighlight();
-            Debug.Log($"{selectedShip.shipName} ďîâĺđíóň íŕďđŕâî");
+            Debug.Log($"{selectedShip.shipName} повернут направо");
         }
         else
         {
-            Debug.Log($"Íĺëüç˙ ďîâĺđíóňü {selectedShip.shipName} íŕďđŕâî");
+            Debug.Log($"Нельзя повернуть {selectedShip.shipName} направо");
         }
     }
 
+    // получить корабли текущего игрока
     private List<Ship> GetCurrentPlayerShips()
     {
         return allShips.Where(s => s.owner == currentPlayer).ToList();
     }
 
+    // включить режим перемещения
     public void EnableMovementMode(List<Ship> ships, Player player)
     {
         allShips = ships;
@@ -272,14 +284,11 @@ public class ShipMovementController : MonoBehaviour
         }
 
         gridManager.ResetAllHighlights();
-        Debug.Log($"Đĺćčě ďĺđĺěĺůĺíč˙ ŕęňčâčđîâŕí äë˙ {player.playerName}");
+        Debug.Log($"Режим перемещения активирован для {player.playerName}");
     }
 
-    public void EnableMovementMode(List<Ship> ships)
-    {
-        EnableMovementMode(ships, null);
-    }
 
+    // отключить режим перемещения
     public void DisableMovementMode()
     {
         movementModeActive = false;
@@ -291,5 +300,4 @@ public class ShipMovementController : MonoBehaviour
 
         gridManager.ResetAllHighlights();
     }
-
 }

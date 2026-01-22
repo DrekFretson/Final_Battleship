@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     private GridManager playerGrid;
     private Vector2Int selectedTarget = new Vector2Int(-1, -1);
     private bool hasTakenActionThisTurn = false;
-    private List<Vector2Int> incomingShots = new List<Vector2Int>(); // выстрелы по этому игроку
+    private List<Vector2Int> incomingShots = new List<Vector2Int>(); //выстрелы по этому игроку
 
     public void Initialize(string name, GridManager grid)
     {
@@ -98,32 +98,32 @@ public class Player : MonoBehaviour
     public virtual bool TakeHit(Vector2Int target)
     {
         bool hit = false;
-        Ship sunkShip = null; // запоминаем, какой корабль потопили
+        Ship sunkShip = null; //запоминаем, какой корабль потопили
 
         foreach (Ship ship in ships)
         {
             if (ship.IsHit(target))
             {
-                // запоминаем состояние до выстрела
+                //запоминаем состояние до выстрела
                 bool wasSunkBefore = ship.isSunk;
 
-                // урон
+                //урон
                 ship.TakeDamage(target);
                 hit = true;
 
                 // если корабль только что потопили
                 if (!wasSunkBefore && ship.isSunk)
                 {
-                    sunkShip = ship; // запоминаем потопленный корабль
+                    sunkShip = ship; //запоминаем потопленный корабль
                     Debug.Log($"Корабль {ship.shipName} потоплен при выстреле в [{target.x},{target.y}]!");
                 }
             }
         }
 
-        // сохраняем информацию о выстреле
+        //сохраняем информацию о выстреле
         incomingShots.Add(target);
 
-        // если потопили корабль - показываем его противнику
+        //если потопили корабль - показываем его противнику
         if (sunkShip != null)
         {
             sunkShip.RevealToOpponent();
@@ -172,7 +172,7 @@ public class Player : MonoBehaviour
     }
 
 
-    // показать потопленные корабли этого игрока
+    //показать потопленные корабли этого игрока
     public void RevealAllSunkShips()
     {
         int sunkCount = 0;
@@ -210,4 +210,3 @@ public class Player : MonoBehaviour
         return playerGrid;
     }
 }
-
